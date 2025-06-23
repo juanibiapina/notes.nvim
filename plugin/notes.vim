@@ -91,6 +91,14 @@ function! s:notes_open(filename)
     let filename = a:filename
   endif
 
+  " Check if the file exists, if not, create it with a header
+  if !filereadable(filename)
+    " Extract note name from filename (remove .md extension)
+    let note_name = substitute(filename, '\.md$', '', '')
+    let header = '# ' . note_name
+    call writefile([header], filename)
+  endif
+
   exec 'edit ' . filename
 endfunction
 

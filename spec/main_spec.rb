@@ -21,6 +21,25 @@ RSpec.describe "vim: organization shortcuts" do
     expect(filename).to eq('myNote.md')
   end
 
+  it "creates file with header when file doesn't exist" do
+    # given
+    temp_file = "temp_test_note"
+
+    # when
+    vim.command "NotesOpen #{temp_file}"
+
+    # then
+    filename = vim.command 'echo @%'
+    expect(filename).to eq("#{temp_file}.md")
+
+    # check file content
+    content = vim.command 'echo getline(1)'
+    expect(content).to eq("# #{temp_file}")
+
+    # cleanup
+    vim.command "call delete('#{temp_file}.md')"
+  end
+
   describe "opening links with a Plug mapping" do
     it "from an obsidian link, one per line" do
       # given
