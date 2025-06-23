@@ -23,11 +23,17 @@ This is a Neovim plugin for note-taking, written in VimScript. It provides funct
 
 ## Architecture
 
-The plugin defines two main functions:
+The plugin defines three main functions:
 - `s:open_current()` - Handles link navigation from current cursor position
 - `s:complete_item()` - Moves current line to daily file under `daily/YYYY-MM-DD.md`
+- `s:notes_open()` - Opens a note file, automatically appending `.md` extension if not present
 
 These are exposed as `<Plug>` mappings and a `:NotesOpen` command.
+
+### NotesOpen Command
+The `:NotesOpen` command accepts a note name and automatically appends the `.md` extension:
+- `:NotesOpen myNote` opens `myNote.md`
+- `:NotesOpen file.md` opens `file.md` (backwards compatible with full filenames)
 
 ## Testing Setup
 

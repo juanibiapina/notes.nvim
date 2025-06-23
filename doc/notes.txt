@@ -24,7 +24,13 @@ g:notes_done_directory	String (default: "daily/")
 COMMANDS						*notes-commands*
 
 :NotesOpen {filename}					*:NotesOpen*
-	Open the specified file for editing.
+	Open the specified file for editing. Automatically appends `.md` 
+	extension if not already present.
+	
+	Examples: >
+		:NotesOpen myNote      " Opens myNote.md
+		:NotesOpen file.md     " Opens file.md (unchanged)
+<
 
 FUNCTIONS						*notes-functions*
 
