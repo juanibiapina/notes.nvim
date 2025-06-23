@@ -51,10 +51,8 @@ function! s:open_current()
   " Remove the surrounding [[ ]] from the filename
   let filename = substitute(filename, '\[\[\(.\{-}\)\]\]', '\1', '')
 
-  " Append .md to the filename and open the file
-  let filename = filename . ".md"
-
-  exec 'edit ' . filename
+  " Use s:notes_open to handle file opening
+  call s:notes_open(filename)
 endfunction
 
 " Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
