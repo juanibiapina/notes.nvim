@@ -9,7 +9,9 @@ This is a Neovim plugin for note-taking, written in VimScript. It provides funct
 - Open files from list items (lines starting with `- `)
 - Move completed items to daily files (compatible with Obsidian daily notes format)
 
-## Development Commands
+## Development
+
+Always practice TDD: New code is only allowed if there's a broken test that justifies it.
 
 ### Testing
 - `bundle exec rspec` - Run all tests
