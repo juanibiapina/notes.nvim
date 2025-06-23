@@ -5,7 +5,7 @@ RSpec.describe "vim: organization shortcuts" do
 
   it "exposes a command to jump to a specific file" do
     # when
-    vim.command 'GorgOpenFile file.md'
+    vim.command 'NotesOpen file.md'
 
     # then
     filename = vim.command 'echo @%'
@@ -15,7 +15,7 @@ RSpec.describe "vim: organization shortcuts" do
   describe "opening links with a Plug mapping" do
     it "from an obsidian link, one per line" do
       # given
-      vim.command 'nmap zz <Plug>GorgOpenFileForCurrentLine'
+      vim.command 'nmap zz <Plug>NotesOpenCurrent'
       vim.command 'set hidden'
       vim.insert '- This is [[The Target]]'
       vim.normal
@@ -31,7 +31,7 @@ RSpec.describe "vim: organization shortcuts" do
 
     it "from an obsidian link, two per line, not on link" do
       # given
-      vim.command 'nmap zz <Plug>GorgOpenFileForCurrentLine'
+      vim.command 'nmap zz <Plug>NotesOpenCurrent'
       vim.command 'set hidden'
       vim.insert '- a [[The Target]] a [[The Other Target]]'
       vim.normal
@@ -47,7 +47,7 @@ RSpec.describe "vim: organization shortcuts" do
 
     it "from an obsidian link, two per line, first link" do
       # given
-      vim.command 'nmap zz <Plug>GorgOpenFileForCurrentLine'
+      vim.command 'nmap zz <Plug>NotesOpenCurrent'
       vim.command 'set hidden'
       vim.insert '- a [[The Target]] a [[The Other Target]]'
       vim.normal
@@ -63,7 +63,7 @@ RSpec.describe "vim: organization shortcuts" do
 
     it "from an obsidian link, two per line, second link" do
       # given
-      vim.command 'nmap zz <Plug>GorgOpenFileForCurrentLine'
+      vim.command 'nmap zz <Plug>NotesOpenCurrent'
       vim.command 'set hidden'
       vim.insert '- a [[The Target]] a [[The Other Target]]'
       vim.normal
@@ -79,7 +79,7 @@ RSpec.describe "vim: organization shortcuts" do
 
     it "from a list item" do
       # given
-      vim.command 'nmap zz <Plug>GorgOpenFileForCurrentLine'
+      vim.command 'nmap zz <Plug>NotesOpenCurrent'
       vim.command 'set hidden'
       vim.insert '- The Target'
       vim.normal
@@ -94,14 +94,14 @@ RSpec.describe "vim: organization shortcuts" do
     end
   end
 
-  describe "GorgCompleteItem" do
+  describe "NotesCompleteItem" do
     let(:today) { Time.now.strftime('%Y-%m-%d') }
     let(:daily_directory) { Dir.mktmpdir }
     let(:tempfile_path) { File.join(daily_directory, "#{today}.md") }
 
     before do
       # Set up the daily directory
-      vim.command("let g:gorg_done_directory = '#{daily_directory}/'")
+      vim.command("let g:notes_done_directory = '#{daily_directory}/'")
     end
 
     after do
@@ -110,7 +110,7 @@ RSpec.describe "vim: organization shortcuts" do
 
     it "moves the current line to daily/YYYY-MM-DD.md" do
       # Given
-      vim.command 'nmap zz <Plug>GorgCompleteItem'
+      vim.command 'nmap zz <Plug>NotesCompleteItem'
       vim.command 'set hidden'
       vim.insert '- Todo item'
       vim.normal

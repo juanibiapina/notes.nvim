@@ -1,12 +1,12 @@
 " directory where daily files will be stored
 " this variable is overridden by tests
 " must end with a slash
-let g:gorg_done_directory = "daily/"
+let g:notes_done_directory = "daily/"
 
 " Treats the current line as a link and open that file
 " First it looks for obsidian style links
 " Otherwise it looks for items in the format '- Item'
-function! s:open_file_for_current_line()
+function! s:open_current()
   let line = getline(".")
   let cursor_col = col(".")
   let pattern = '\v\[\[(.{-})\]\]'
@@ -61,7 +61,7 @@ endfunction
 " This format is compatible with Obsidian daily notes
 function! s:complete_item()
   let l:today = strftime("%Y-%m-%d")
-  let l:done_filename = g:gorg_done_directory . l:today . '.md'
+  let l:done_filename = g:notes_done_directory . l:today . '.md'
   let l:current_line = getline(".")
 
   " Check if the daily file exists, if not, create it with a date header
@@ -82,7 +82,7 @@ function! s:complete_item()
   execute 'delete'
 endfunction
 
-nnoremap <Plug>GorgOpenFileForCurrentLine :call <SID>open_file_for_current_line()<CR>
-nnoremap <Plug>GorgCompleteItem :call <SID>complete_item()<CR>
+nnoremap <Plug>NotesOpenCurrent :call <SID>open_current()<CR>
+nnoremap <Plug>NotesCompleteItem :call <SID>complete_item()<CR>
 
-command! -nargs=1 -bar GorgOpenFile edit <args>
+command! -nargs=1 -bar NotesOpen edit <args>
