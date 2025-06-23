@@ -3,6 +3,14 @@
 # Test runner script for plenary tests
 set -e
 
+echo "Setting up plenary test environment..."
+
+# Download plenary if not present
+if [ ! -d "tests/plenary.nvim" ]; then
+    echo "Downloading plenary.nvim..."
+    git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git tests/plenary.nvim
+fi
+
 echo "Running plenary tests..."
 
 # Use neovim to run plenary tests if available
