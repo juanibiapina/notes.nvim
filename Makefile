@@ -1,3 +1,3 @@
 .PHONY: test
 test:
-	bundle exec rspec
+	./run_tests.sh
