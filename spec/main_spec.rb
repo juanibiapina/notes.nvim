@@ -12,6 +12,15 @@ RSpec.describe "vim: organization shortcuts" do
     expect(filename).to eq('file.md')
   end
 
+  it "auto-appends .md extension when only note name is provided" do
+    # when
+    vim.command 'NotesOpen myNote'
+
+    # then
+    filename = vim.command 'echo @%'
+    expect(filename).to eq('myNote.md')
+  end
+
   describe "opening links with a Plug mapping" do
     it "from an obsidian link, one per line" do
       # given

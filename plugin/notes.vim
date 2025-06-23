@@ -85,4 +85,15 @@ endfunction
 nnoremap <Plug>NotesOpenCurrent :call <SID>open_current()<CR>
 nnoremap <Plug>NotesCompleteItem :call <SID>complete_item()<CR>
 
-command! -nargs=1 -bar NotesOpen edit <args>
+function! s:notes_open(filename)
+  " Check if filename already ends with .md
+  if a:filename !~ '\.md$'
+    let filename = a:filename . '.md'
+  else
+    let filename = a:filename
+  endif
+
+  exec 'edit ' . filename
+endfunction
+
+command! -nargs=1 -bar NotesOpen call <SID>notes_open(<q-args>)
