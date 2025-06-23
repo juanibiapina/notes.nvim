@@ -1,8 +1,11 @@
 # Test dependencies
 tests/plenary.nvim/
 
-# Temporary test files
-*.md
+# Temporary test files created during testing
+temp_test_note.md
+The*.md
+file.md
+myNote.md
 daily/
 
 # Neovim
