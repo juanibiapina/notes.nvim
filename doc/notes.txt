@@ -1,0 +1,79 @@
+*notes.txt*	Note-taking plugin for Neovim		*notes.nvim*
+
+Author:  Juan Ibiapina
+License: Same terms as Vim itself (see |license|)
+
+INTRODUCTION						*notes-introduction*
+
+This plugin provides functionality for note-taking in Neovim with support for:
+- Opening links in Obsidian-style double brackets format `[[filename]]`
+- Opening files from list items (lines starting with `- `)
+- Moving completed items to daily files (compatible with Obsidian daily notes)
+
+CONFIGURATION						*notes-configuration*
+
+						*g:notes_done_directory*
+g:notes_done_directory	String (default: "daily/")
+	Directory where daily files will be stored when completing items.
+	Must end with a slash.
+
+	Example: >
+		let g:notes_done_directory = "completed/"
+<
+
+COMMANDS						*notes-commands*
+
+:NotesOpen {filename}					*:NotesOpen*
+	Open the specified file for editing.
+
+FUNCTIONS						*notes-functions*
+
+The plugin provides two main functions accessible via <Plug> mappings:
+
+<Plug>NotesOpenCurrent					*<Plug>NotesOpenCurrent*
+	Opens a link or file based on the current cursor position:
+	- If cursor is on an Obsidian-style link `[[filename]]`, opens that file
+	- If multiple links exist on the line, opens the one under the cursor
+	- If no links found but line starts with `- `, opens that as filename
+	- Automatically appends `.md` extension to filenames
+
+<Plug>NotesCompleteItem					*<Plug>NotesCompleteItem*
+	Moves the current line to a daily file:
+	- Creates file in format `daily/YYYY-MM-DD.md` (or custom directory)
+	- Appends current line to the daily file
+	- Removes current line from original file
+	- Compatible with Obsidian daily notes format
+
+MAPPINGS						*notes-mappings*
+
+The plugin does not set any default mappings. You can create your own: >
+
+	" Example mappings
+	nmap <leader>no <Plug>NotesOpenCurrent
+	nmap <leader>nc <Plug>NotesCompleteItem
+<
+
+USAGE EXAMPLES						*notes-examples*
+
+Opening links:
+	Place cursor on any `[[filename]]` link and use <Plug>NotesOpenCurrent
+	to open `filename.md`
+
+Opening list items:
+	Place cursor on a line like `- My Note Title` and use 
+	<Plug>NotesOpenCurrent to open `My Note Title.md`
+
+Completing items:
+	Place cursor on any line and use <Plug>NotesCompleteItem to move
+	that line to today's daily file in the configured directory
+
+Multiple links on one line:
+	If a line contains `[[link1]] and [[link2]]`, the plugin will open
+	the link where your cursor is positioned
+
+ABOUT							*notes-about*
+
+Grab the latest version or report a bug on GitHub:
+http://github.com/juanibiapina/notes.nvim
+
+ vim:tw=78:et:ft=help:norl:
