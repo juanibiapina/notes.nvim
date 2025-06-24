@@ -11,7 +11,7 @@ describe("NotesCompleteItem", function()
     helpers.load_plugin()
     
     today = helpers.get_today_date()
-    tempfile_path = helpers.get_temp_dir() .. '/' .. today .. '.md'
+    tempfile_path = helpers.get_temp_dir() .. '/daily/' .. today .. '.md'
     
     -- Get the mapping command
     local mappings = vim.api.nvim_get_keymap('n')

@@ -16,9 +16,6 @@ function M.setup_test_env()
   
   -- Change to temporary directory
   vim.cmd('cd ' .. temp_dir)
-  
-  -- Setup daily directory variable for tests (this is the BASE directory, the plugin will append the filename)
-  vim.g.notes_done_directory = temp_dir .. '/'
 end
 
 -- Helper function to teardown test environment
@@ -36,11 +33,6 @@ end
 function M.load_plugin()
   local plugin_path = '/home/runner/work/notes.nvim/notes.nvim/plugin/notes.vim'
   vim.cmd('source ' .. plugin_path)
-  
-  -- Override the default directory with our temp directory
-  if temp_dir then
-    vim.g.notes_done_directory = temp_dir .. '/'
-  end
 end
 
 -- Helper function to clear current buffer
