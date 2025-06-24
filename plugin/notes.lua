@@ -15,6 +15,14 @@ vim.api.nvim_create_user_command('NotesCompleteItem', function()
   notes.complete_item()
 end, { desc = 'Move current line to daily file' })
 
+vim.api.nvim_create_user_command('NotesTaskNew', function()
+  notes.task_new()
+end, { desc = 'Create a new empty task on the next line' })
+
+vim.api.nvim_create_user_command('NotesTaskToggle', function()
+  notes.task_toggle()
+end, { desc = 'Toggle task between done and not done' })
+
 -- For backward compatibility, keep the <Plug> mappings that call the commands
 vim.api.nvim_set_keymap('n', '<Plug>NotesOpenCurrent', ':NotesOpenCurrent<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Plug>NotesCompleteItem', ':NotesCompleteItem<CR>', { noremap = true, silent = true })
