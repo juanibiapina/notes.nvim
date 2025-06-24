@@ -4,8 +4,8 @@ local M = {}
 local original_cwd = nil
 local temp_dir = nil
 
--- Helper function to setup test environment
-function M.setup_test_env()
+-- Helper function to setup working directory for tests
+function M.setup_working_directory()
   if not original_cwd then
     original_cwd = vim.fn.getcwd()
   end
@@ -16,6 +16,13 @@ function M.setup_test_env()
 
   -- Change to temporary directory
   vim.cmd('cd ' .. temp_dir)
+end
+
+-- Helper function to setup test environment
+function M.setup_test_env()
+  M.setup_working_directory()
+  M.clear_buffer()
+  M.load_plugin()
 end
 
 -- Helper function to get the plugin root directory
@@ -54,6 +61,16 @@ end
 -- Helper function to get current temp directory
 function M.get_temp_dir()
   return temp_dir
+end
+
+-- Helper function to load the plugin for tests
+function M.load_plugin()
+  -- Add plugin root to runtimepath so lua modules can be found
+  local plugin_root = M.get_plugin_root()
+  vim.opt.rtp:prepend(plugin_root)
+  
+  local plugin_path = plugin_root .. '/plugin/notes.lua'
+  vim.cmd('luafile ' .. plugin_path)
 end
 
 return M

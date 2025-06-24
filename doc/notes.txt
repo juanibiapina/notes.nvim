@@ -10,6 +10,9 @@ This plugin provides functionality for note-taking in Neovim with support for:
 - Opening files from list items (lines starting with `- `)
 - Moving completed items to daily files (compatible with Obsidian daily notes)
 
+The plugin is written in Lua and exposes both commands and Lua functions for
+programmatic access.
+
 CONFIGURATION						*notes-configuration*
 
 						*g:notes_done_directory*
@@ -25,36 +28,56 @@ COMMANDS						*notes-commands*
 
 :NotesOpen {filename}					*:NotesOpen*
 	Open the specified file for editing. Automatically appends `.md` 
-	extension if not already present.
+	extension if not already present. Creates the file with a header
+	if it doesn't exist.
 	
 	Examples: >
 		:NotesOpen myNote      " Opens myNote.md
 		:NotesOpen file.md     " Opens file.md (unchanged)
 <
 
-FUNCTIONS						*notes-functions*
-
-The plugin provides two main functions accessible via <Plug> mappings:
-
-<Plug>NotesOpenCurrent					*<Plug>NotesOpenCurrent*
+:NotesOpenCurrent					*:NotesOpenCurrent*
 	Opens a link or file based on the current cursor position:
 	- If cursor is on an Obsidian-style link `[[filename]]`, opens that file
 	- If multiple links exist on the line, opens the one under the cursor
 	- If no links found but line starts with `- `, opens that as filename
 	- Automatically appends `.md` extension to filenames
 
-<Plug>NotesCompleteItem					*<Plug>NotesCompleteItem*
+:NotesCompleteItem					*:NotesCompleteItem*
 	Moves the current line to a daily file:
 	- Creates file in format `daily/YYYY-MM-DD.md` (or custom directory)
 	- Appends current line to the daily file
 	- Removes current line from original file
 	- Compatible with Obsidian daily notes format
 
+LUA FUNCTIONS						*notes-functions*
+
+All commands are also available as Lua functions for programmatic access:
+
+require('notes').notes_open({filename})			*notes.notes_open()*
+	Lua equivalent of `:NotesOpen` command.
+
+require('notes').open_current()				*notes.open_current()*
+	Lua equivalent of `:NotesOpenCurrent` command.
+
+require('notes').complete_item()			*notes.complete_item()*
+	Lua equivalent of `:NotesCompleteItem` command.
+
 MAPPINGS						*notes-mappings*
 
 The plugin does not set any default mappings. You can create your own: >
 
-	" Example mappings
+	" Example mappings using commands
+	nmap <leader>no :NotesOpenCurrent<CR>
+	nmap <leader>nc :NotesCompleteItem<CR>
+
+	" Example mappings using Lua functions
+	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
+	nnoremap <leader>nc <cmd>lua require('notes').complete_item()<CR>
+<
+
+For backward compatibility, <Plug> mappings are still available: >
+	" Legacy <Plug> mappings (still supported)
 	nmap <leader>no <Plug>NotesOpenCurrent
 	nmap <leader>nc <Plug>NotesCompleteItem
 <
@@ -62,15 +85,15 @@ The plugin does not set any default mappings. You can create your own: >
 USAGE EXAMPLES						*notes-examples*
 
 Opening links:
-	Place cursor on any `[[filename]]` link and use <Plug>NotesOpenCurrent
+	Place cursor on any `[[filename]]` link and use `:NotesOpenCurrent`
 	to open `filename.md`
 
 Opening list items:
 	Place cursor on a line like `- My Note Title` and use 
-	<Plug>NotesOpenCurrent to open `My Note Title.md`
+	`:NotesOpenCurrent` to open `My Note Title.md`
 
 Completing items:
-	Place cursor on any line and use <Plug>NotesCompleteItem to move
+	Place cursor on any line and use `:NotesCompleteItem` to move
 	that line to today's daily file in the configured directory
 
 Multiple links on one line:

@@ -7,11 +7,6 @@ describe("NotesCompleteItem", function()
 
   before_each(function()
     helpers.setup_test_env()
-    helpers.clear_buffer()
-
-    -- Load plugin for this test using absolute path
-    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.vim'
-    vim.cmd('source ' .. plugin_path)
 
     today = helpers.get_today_date()
     tempfile_path = helpers.get_temp_dir() .. '/daily/' .. today .. '.md'
@@ -50,5 +45,47 @@ describe("NotesCompleteItem", function()
 
     -- Check if the item has been moved to the daily file
     assert.are.equal('- Todo item', daily_file_contents[1])
+  end)
+
+  it("command works to move current line to daily file", function()
+    -- Given
+    helpers.set_buffer_content('- Command todo item')
+    vim.cmd('normal! gg')
+
+    -- When - Execute the command directly
+    vim.cmd('NotesCompleteItem')
+
+    -- Then
+    -- Check if the current line has been deleted
+    local new_current_line = vim.fn.getline(1)
+    assert.are.equal('', new_current_line)
+
+    -- Read the contents of the daily file
+    assert.are.equal(1, vim.fn.filereadable(tempfile_path))
+    local daily_file_contents = vim.fn.readfile(tempfile_path)
+
+    -- Check if the item has been moved to the daily file
+    assert.are.equal('- Command todo item', daily_file_contents[#daily_file_contents])
+  end)
+
+  it("lua function works to move current line to daily file", function()
+    -- Given
+    helpers.set_buffer_content('- Lua function todo item')
+    vim.cmd('normal! gg')
+
+    -- When - Execute the lua function directly
+    require('notes').complete_item()
+
+    -- Then
+    -- Check if the current line has been deleted
+    local new_current_line = vim.fn.getline(1)
+    assert.are.equal('', new_current_line)
+
+    -- Read the contents of the daily file
+    assert.are.equal(1, vim.fn.filereadable(tempfile_path))
+    local daily_file_contents = vim.fn.readfile(tempfile_path)
+
+    -- Check if the item has been moved to the daily file
+    assert.are.equal('- Lua function todo item', daily_file_contents[#daily_file_contents])
   end)
 end)

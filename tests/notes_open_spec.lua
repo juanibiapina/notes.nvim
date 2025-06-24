@@ -3,11 +3,6 @@ local helpers = require('tests.support.helpers')
 describe("NotesOpen command", function()
   before_each(function()
     helpers.setup_test_env()
-    helpers.clear_buffer()
-
-    -- Load plugin for this test using absolute path
-    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.vim'
-    vim.cmd('source ' .. plugin_path)
   end)
 
   after_each(function()
@@ -46,5 +41,18 @@ describe("NotesOpen command", function()
     -- check file content
     local content = vim.fn.getline(1)
     assert.are.equal('# ' .. temp_file, content)
+  end)
+
+  it("lua function works to open notes", function()
+    -- when
+    require('notes').notes_open('lua_test_file')
+
+    -- then
+    local filename = vim.fn.expand('%:t')
+    assert.are.equal('lua_test_file.md', filename)
+
+    -- check file content (should have header)
+    local content = vim.fn.getline(1)
+    assert.are.equal('# lua_test_file', content)
   end)
 end)
