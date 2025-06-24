@@ -1,27 +1,20 @@
 local helpers = require('tests.helpers')
 
 describe("NotesCompleteItem", function()
-  local temp_dir
   local today
   local tempfile_path
 
   before_each(function()
+    helpers.setup_test_env()
     helpers.clear_buffer()
-    temp_dir = helpers.create_temp_dir()
+    -- Ensure plugin is loaded
+    vim.cmd('runtime! plugin/notes.vim')
     today = helpers.get_today_date()
-    tempfile_path = temp_dir .. '/' .. today .. '.md'
-    
-    -- Set up the daily directory
-    vim.g.notes_done_directory = temp_dir .. '/'
+    tempfile_path = helpers.get_temp_dir() .. '/' .. today .. '.md'
   end)
 
   after_each(function()
-    -- Clean up temp directory
-    if vim.fn.isdirectory(temp_dir) == 1 then
-      vim.fn.delete(temp_dir, 'rf')
-    end
-    -- Reset the global variable
-    vim.g.notes_done_directory = 'daily/'
+    helpers.teardown_test_env()
   end)
 
   it("moves the current line to daily/YYYY-MM-DD.md", function()

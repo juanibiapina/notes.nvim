@@ -2,11 +2,14 @@ local helpers = require('tests.helpers')
 
 describe("opening links with a Plug mapping", function()
   before_each(function()
+    helpers.setup_test_env()
     helpers.clear_buffer()
+    -- Ensure plugin is loaded
+    vim.cmd('runtime! plugin/notes.vim')
   end)
 
   after_each(function()
-    helpers.cleanup_test_files()
+    helpers.teardown_test_env()
   end)
 
   it("from an obsidian link, one per line", function()

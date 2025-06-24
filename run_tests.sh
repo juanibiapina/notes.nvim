@@ -15,7 +15,12 @@ echo "Running plenary tests..."
 
 # Use neovim to run plenary tests if available
 if command -v nvim >/dev/null 2>&1; then
-    nvim --headless --noplugin -u tests/minimal_init.lua -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal_init.lua'}" -c "qa!"
+    # Run each test file individually to avoid plenary's own tests
+    # Remove --noplugin to allow the plugin to load properly
+    for test_file in tests/*_spec.lua; do
+        echo "Running test: $test_file"
+        nvim --headless -u tests/minimal_init.lua -c "lua require('plenary.test_harness').test_file('$test_file')" -c "qa!"
+    done
 else
     echo "Warning: neovim not found. Tests cannot be run."
     echo "Please install neovim to run the test suite."

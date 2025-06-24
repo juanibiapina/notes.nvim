@@ -1,11 +1,41 @@
 local M = {}
 
+-- Store original working directory
+local original_cwd = nil
+local temp_dir = nil
+
+-- Helper function to setup test environment
+function M.setup_test_env()
+  if not original_cwd then
+    original_cwd = vim.fn.getcwd()
+  end
+  
+  -- Create a unique temporary directory for this test session
+  temp_dir = '/tmp/notes_test_' .. os.time() .. '_' .. math.random(1000, 9999)
+  vim.fn.mkdir(temp_dir, 'p')
+  
+  -- Change to temporary directory
+  vim.cmd('cd ' .. temp_dir)
+  
+  -- Setup daily directory variable for tests (this is the BASE directory, the plugin will append the filename)
+  vim.g.notes_done_directory = temp_dir .. '/'
+end
+
+-- Helper function to teardown test environment
+function M.teardown_test_env()
+  if temp_dir and vim.fn.isdirectory(temp_dir) == 1 then
+    vim.fn.delete(temp_dir, 'rf')
+  end
+  
+  if original_cwd then
+    vim.cmd('cd ' .. original_cwd)
+  end
+end
+
 -- Helper function to clear current buffer
 function M.clear_buffer()
   vim.cmd('enew!')
-  vim.cmd('set buftype=nofile')
-  vim.cmd('set bufhidden=hide')
-  vim.cmd('set noswapfile')
+  -- Don't set buftype=nofile for tests that need to modify the buffer
 end
 
 -- Helper function to set buffer content
@@ -14,38 +44,13 @@ function M.set_buffer_content(content)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end
 
--- Helper function to cleanup test files
-function M.cleanup_test_files()
-  -- Clean up any created test files
-  local test_files = {
-    'The Target.md',
-    'The Other Target.md',
-    'myNote.md',
-    'file.md',
-    'temp_test_note.md'
-  }
-  
-  for _, file in ipairs(test_files) do
-    if vim.fn.filereadable(file) == 1 then
-      vim.fn.delete(file)
-    end
-  end
-  
-  -- Clean up daily directory if it exists
-  if vim.fn.isdirectory('daily') == 1 then
-    vim.fn.delete('daily', 'rf')
-  end
-end
-
 -- Helper function to get current date string
 function M.get_today_date()
   return os.date('%Y-%m-%d')
 end
 
--- Helper function to create temporary directory
-function M.create_temp_dir()
-  local temp_dir = '/tmp/notes_test_' .. os.time()
-  vim.fn.mkdir(temp_dir, 'p')
+-- Helper function to get current temp directory
+function M.get_temp_dir()
   return temp_dir
 end
 
