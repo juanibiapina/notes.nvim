@@ -16,6 +16,9 @@ function M.setup_test_env()
   
   -- Change to temporary directory
   vim.cmd('cd ' .. temp_dir)
+  
+  -- Create the daily directory that the plugin expects
+  vim.fn.mkdir(temp_dir .. '/daily', 'p')
 end
 
 -- Helper function to teardown test environment
