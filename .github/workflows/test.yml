@@ -25,4 +25,4 @@ jobs:
         version: ${{ matrix.neovim-version }}
 
     - name: Run tests
-      run: make test
+      run: timeout 60 make test
