@@ -13,10 +13,6 @@ local function is_complete_task(line)
   return line:match('^%s*-%s+%[x%]') ~= nil
 end
 
-local function is_list_item(line)
-  return line:match('^%s*-%s+') ~= nil
-end
-
 -- Open a note file, automatically appending .md extension if not present
 -- Creates file with header if it doesn't exist
 function M.notes_open(title)
@@ -40,8 +36,7 @@ function M.notes_open(title)
 end
 
 -- Treats the current line as a link and open that file
--- First it looks for obsidian style links
--- Otherwise it looks for items in the format '- Item'
+-- Only supports obsidian style links
 function M.open_current()
   local line = vim.fn.getline('.')
   local cursor_col = vim.fn.col('.')
@@ -65,13 +60,9 @@ function M.open_current()
 
   local title
   if #matches == 0 then
-    -- If no pattern is found, strip leading '- ' and use the line if it's there
-    if line:match('^%- ') then
-      title = line:gsub('^%- ', '')
-    else
-      print('No link found')
-      return
-    end
+    -- No obsidian links found
+    print('No link found')
+    return
   elseif #matches == 1 then
     -- If there's only one link, use it
     title = matches[1].inner_text
@@ -225,23 +216,6 @@ local function handle_task_toggle()
   return false
 end
 
--- Returns true if a list item was found and opened, false otherwise
-local function handle_list_item()
-  local line = vim.fn.getline('.')
-
-  if is_list_item(line) then
-    local title = line:gsub('^%s*-%s+', '')
-    -- Only open if there's actual content after the dash
-    title = title:gsub('^%s*(.-)%s*$', '%1') -- trim whitespace
-    if title and title ~= '' then
-      M.notes_open(title)
-      return true
-    end
-  end
-
-  return false
-end
-
 -- Magic command that combines multiple behaviors based on context
 function M.magic()
   if handle_obsidian_link() then
@@ -249,10 +223,6 @@ function M.magic()
   end
 
   if handle_task_toggle() then
-    return
-  end
-
-  if handle_list_item() then
     return
   end
 

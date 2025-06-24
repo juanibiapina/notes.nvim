@@ -7,7 +7,6 @@ INTRODUCTION						*notes-introduction*
 
 This plugin provides functionality for note-taking in Neovim with support for:
 - Opening links in Obsidian-style double brackets format `[[filename]]`
-- Opening files from list items (lines starting with `- `)
 - Moving completed items to daily files (compatible with Obsidian daily notes)
 - Creating and managing tasks with checkboxes
 
@@ -38,11 +37,11 @@ COMMANDS						*notes-commands*
 <
 
 :NotesOpenCurrent					*:NotesOpenCurrent*
-	Opens a link or file based on the current cursor position:
+	Opens a link based on the current cursor position:
 	- If cursor is on an Obsidian-style link `[[filename]]`, opens that file
 	- If multiple links exist on the line, opens the one under the cursor
-	- If no links found but line starts with `- `, opens that as filename
 	- Automatically appends `.md` extension to filenames
+	- Does nothing if no Obsidian links are found
 
 :NotesCompleteItem					*:NotesCompleteItem*
 	Moves the current line to a daily file:
@@ -75,8 +74,7 @@ COMMANDS						*notes-commands*
 	Smart command that behaves contextually based on cursor position:
 	1. If cursor is on an Obsidian-style link `[[filename]]`, follows the link
 	2. Otherwise, if current line is a task, toggles the task completion
-	3. Otherwise, if current line is a list item, opens it as a note
-	4. Otherwise, does nothing
+	3. Otherwise, does nothing
 	
 	This command works well when assigned to a hotkey like "Enter" for
 	context-aware note navigation and task management.
@@ -137,10 +135,6 @@ Opening links:
 	Place cursor on any `[[filename]]` link and use `:NotesOpenCurrent`
 	to open `filename.md`
 
-Opening list items:
-	Place cursor on a line like `- My Note Title` and use 
-	`:NotesOpenCurrent` to open `My Note Title.md`
-
 Completing items:
 	Place cursor on any line and use `:NotesCompleteItem` to move
 	that line to today's daily file in the configured directory
@@ -158,7 +152,6 @@ Smart context-aware command:
 	Use `:NotesMagic` for context-aware behavior:
 	- On `[[link]]`: follows the link
 	- On `- [ ] task`: toggles task completion
-	- On `- list item`: opens as note
 	- Otherwise: does nothing
 	
 	Perfect for mapping to Enter key for intuitive navigation
