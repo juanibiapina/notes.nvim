@@ -10,4 +10,4 @@ else
 end
 
 -- Source the plugin
-vim.cmd('runtime plugin/notes.vim')
+vim.cmd('runtime! plugin/notes.vim')
