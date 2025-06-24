@@ -1,4 +1,4 @@
-local helpers = require('tests.helpers')
+local helpers = require('tests.support.helpers')
 
 describe("NotesCompleteItem", function()
   local today

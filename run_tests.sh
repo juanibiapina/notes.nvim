@@ -16,7 +16,7 @@ echo "Running plenary tests..."
 # Use neovim to run plenary tests if available
 if command -v nvim >/dev/null 2>&1; then
     # Run all tests in the directory using PlenaryBustedDirectory
-    nvim --headless -c "PlenaryBustedDirectory tests {minimal_init = 'tests/minimal_init.lua', sequential = true, timeout = 2000}" -c "qa!"
+    nvim --headless -u tests/support/init.lua -c "PlenaryBustedDirectory tests {minimal_init = 'tests/support/minimal_init.lua', sequential = true, timeout = 2000}"
 else
     echo "Warning: neovim not found. Tests cannot be run."
     echo "Please install neovim to run the test suite."

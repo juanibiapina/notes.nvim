@@ -1,4 +1,4 @@
-local helpers = require('tests.helpers')
+local helpers = require('tests.support.helpers')
 
 describe("NotesOpen command", function()
   before_each(function()
@@ -14,7 +14,7 @@ describe("NotesOpen command", function()
     helpers.teardown_test_env()
   end)
 
-  it("exposes a command to jump to a specific file", function()    
+  it("exposes a command to jump to a specific file", function()
     -- when
     vim.cmd('NotesOpen file.md')
 
@@ -23,7 +23,7 @@ describe("NotesOpen command", function()
     assert.are.equal('file.md', filename)
   end)
 
-  it("auto-appends .md extension when only note name is provided", function()    
+  it("auto-appends .md extension when only note name is provided", function()
     -- when
     vim.cmd('NotesOpen myNote')
 

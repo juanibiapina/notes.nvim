@@ -1,4 +1,4 @@
-local helpers = require('tests.helpers')
+local helpers = require('tests.support.helpers')
 
 describe("opening links with a Plug mapping", function()
   local open_current_cmd
