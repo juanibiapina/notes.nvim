@@ -4,8 +4,7 @@ test:
 	./bin/test
 
 lint:
-	luacheck .
-	stylua --check .
+	./bin/lint
 
 ci:
 	./bin/ci

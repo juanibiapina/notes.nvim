@@ -7,29 +7,18 @@ echo "Running CI checks for notes.nvim..."
 echo "======================================"
 
 # Run linting
-echo "1. Running luacheck (static analysis)..."
-if ! luacheck .; then
-    echo "❌ Luacheck failed!"
+echo "Running linting checks..."
+if ! ./bin/lint; then
+    echo "❌ Linting failed!"
     exit 1
 fi
-echo "✅ Luacheck passed!"
 
 echo ""
-echo "2. Running stylua (code formatting check)..."
-if ! stylua --check .; then
-    echo "❌ Stylua formatting check failed!"
-    echo "💡 Run 'stylua .' to auto-fix formatting issues"
-    exit 1
-fi
-echo "✅ Stylua formatting check passed!"
-
-echo ""
-echo "3. Running tests..."
+echo "Running tests..."
 if ! ./bin/test; then
     echo "❌ Tests failed!"
     exit 1
 fi
-echo "✅ Tests passed!"
 
 echo ""
 echo "🎉 All CI checks passed!"
