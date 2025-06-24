@@ -9,11 +9,11 @@ function M.setup_test_env()
   if not original_cwd then
     original_cwd = vim.fn.getcwd()
   end
-  
+
   -- Create a unique temporary directory for this test session
   temp_dir = '/tmp/notes_test_' .. os.time() .. '_' .. math.random(1000, 9999)
   vim.fn.mkdir(temp_dir, 'p')
-  
+
   -- Change to temporary directory
   vim.cmd('cd ' .. temp_dir)
 end
@@ -28,7 +28,7 @@ function M.teardown_test_env()
   if temp_dir and vim.fn.isdirectory(temp_dir) == 1 then
     vim.fn.delete(temp_dir, 'rf')
   end
-  
+
   if original_cwd then
     vim.cmd('cd ' .. original_cwd)
   end
