@@ -1,4 +1,4 @@
-name: Tests
+name: Test
 
 on:
   push:
@@ -9,20 +9,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        neovim-version: ['stable', 'nightly']
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
+    - name: Install Neovim
+      uses: rhysd/action-setup-vim@v1
       with:
-        ruby-version-file: .ruby-version
-        bundler-cache: true
-
-    - name: Install vim with server capabilities
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y vim-gtk3 xvfb
+        neovim: true
+        version: ${{ matrix.neovim-version }}
 
     - name: Run tests
-      run: xvfb-run -a make test
+      run: make test
