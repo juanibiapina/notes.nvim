@@ -1,2 +1,2 @@
 # Test dependencies
-tests/plenary.nvim/
+vendor/

@@ -6,17 +6,16 @@ set -e
 echo "Setting up plenary test environment..."
 
 # Download plenary if not present
-if [ ! -d "tests/plenary.nvim" ]; then
+if [ ! -d "vendor/plenary.nvim" ]; then
     echo "Downloading plenary.nvim..."
-    git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git tests/plenary.nvim
+    git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git vendor/plenary.nvim
 fi
 
 echo "Running plenary tests..."
 
 # Use neovim to run plenary tests if available
 if command -v nvim >/dev/null 2>&1; then
-    # Run each test file individually to avoid plenary's own tests
-    # Remove --noplugin to allow the plugin to load properly
+    # Run all test files - plenary is now in vendor/ so no need to filter
     for test_file in tests/*_spec.lua; do
         echo "Running test: $test_file"
         nvim --headless -u tests/minimal_init.lua -c "lua require('plenary.test_harness').test_file('$test_file')" -c "qa!"

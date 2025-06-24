@@ -3,14 +3,23 @@ local helpers = require('tests.helpers')
 describe("NotesCompleteItem", function()
   local today
   local tempfile_path
+  local complete_item_cmd
 
   before_each(function()
     helpers.setup_test_env()
     helpers.clear_buffer()
-    -- Ensure plugin is loaded
-    vim.cmd('runtime! plugin/notes.vim')
     today = helpers.get_today_date()
     tempfile_path = helpers.get_temp_dir() .. '/' .. today .. '.md'
+    
+    -- Get the mapping command
+    local mappings = vim.api.nvim_get_keymap('n')
+    for _, mapping in ipairs(mappings) do
+      if mapping.lhs == '<Plug>NotesCompleteItem' then
+        complete_item_cmd = mapping.rhs:gsub('<CR>$', '')
+        break
+      end
+    end
+    assert(complete_item_cmd, "NotesCompleteItem mapping not found")
   end)
 
   after_each(function()
@@ -22,28 +31,10 @@ describe("NotesCompleteItem", function()
     helpers.set_buffer_content('- Todo item')
     vim.cmd('normal! gg')
 
-    -- When - Implement the complete_item functionality directly in Lua
-    local today = os.date('%Y-%m-%d')
-    local done_filename = vim.g.notes_done_directory .. today .. '.md'
-    local current_line = vim.fn.getline('.')
-    
-    -- Check if the daily file exists, if not, create it
-    if vim.fn.filereadable(done_filename) == 0 then
-      vim.fn.writefile({}, done_filename)
-    end
-    
-    -- Read the contents of the daily file
-    local done_contents = vim.fn.readfile(done_filename)
-    
-    -- Append the current line to the file
-    table.insert(done_contents, current_line)
-    
-    -- Save the changes to the daily file
-    vim.fn.writefile(done_contents, done_filename)
-    
-    -- Delete the current line from the original buffer
-    vim.cmd('delete')
+    -- When - Execute the mapping command directly
+    vim.cmd(complete_item_cmd)
 
+    -- Then
     -- Check if the current line has been deleted
     local new_current_line = vim.fn.getline(1)
     assert.are.equal('', new_current_line)
