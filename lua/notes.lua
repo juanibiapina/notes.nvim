@@ -125,6 +125,26 @@ function M.complete_item()
   vim.cmd('delete')
 end
 
+-- Opens today's daily file under the format daily/YYYY-MM-DD.md
+-- This format is compatible with Obsidian daily notes
+function M.daily_today()
+  local today = os.date('%Y-%m-%d')
+  local daily_filename = 'daily/' .. today .. '.md'
+
+  -- Create the daily directory if it doesn't exist
+  if vim.fn.isdirectory('daily') == 0 then
+    vim.fn.mkdir('daily', 'p')
+  end
+
+  -- Check if the file exists, if not, create it with a header using just the date
+  if vim.fn.filereadable(daily_filename) == 0 then
+    local header = '# ' .. today
+    vim.fn.writefile({ header }, daily_filename)
+  end
+
+  vim.cmd('edit ' .. daily_filename)
+end
+
 -- Creates a new empty, not done task on the next line
 function M.task_new()
   local current_line = vim.fn.line('.')

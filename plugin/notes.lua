@@ -14,6 +14,10 @@ vim.api.nvim_create_user_command('NotesCompleteItem', function()
   notes.complete_item()
 end, { desc = 'Move current line to daily file' })
 
+vim.api.nvim_create_user_command('NotesDailyToday', function()
+  notes.daily_today()
+end, { desc = "Open today's daily file" })
+
 vim.api.nvim_create_user_command('NotesTaskNew', function()
   notes.task_new()
 end, { desc = 'Create a new empty task on the next line' })

@@ -51,6 +51,13 @@ COMMANDS						*notes-commands*
 	- Removes current line from original file
 	- Compatible with Obsidian daily notes format
 
+:NotesDailyToday					*:NotesDailyToday*
+	Opens today's daily file:
+	- Opens file in format `daily/YYYY-MM-DD.md`
+	- Creates the file with a header if it doesn't exist
+	- Creates the daily directory if it doesn't exist
+	- Compatible with Obsidian daily notes format
+
 :NotesTaskNew						*:NotesTaskNew*
 	Creates a new empty task on the next line:
 	- Inserts `- [ ] ` on the line below the cursor
@@ -86,6 +93,9 @@ require('notes').open_current()				*notes.open_current()*
 
 require('notes').complete_item()			*notes.complete_item()*
 	Lua equivalent of `:NotesCompleteItem` command.
+
+require('notes').daily_today()				*notes.daily_today()*
+	Lua equivalent of `:NotesDailyToday` command.
 
 require('notes').task_new()				*notes.task_new()*
 	Lua equivalent of `:NotesTaskNew` command.
