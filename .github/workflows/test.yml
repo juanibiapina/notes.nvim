@@ -12,15 +12,15 @@ jobs:
     strategy:
       matrix:
         neovim-version: ['stable', 'nightly']
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Install Neovim
       uses: rhysd/action-setup-vim@v1
       with:
         neovim: true
         version: ${{ matrix.neovim-version }}
-    
+
     - name: Run tests
       run: make test
