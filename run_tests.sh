@@ -15,11 +15,8 @@ echo "Running plenary tests..."
 
 # Use neovim to run plenary tests if available
 if command -v nvim >/dev/null 2>&1; then
-    # Run all test files - plenary is now in vendor/ so no need to filter
-    for test_file in tests/*_spec.lua; do
-        echo "Running test: $test_file"
-        nvim --headless -u tests/minimal_init.lua -c "lua require('plenary.test_harness').test_file('$test_file')" -c "qa!"
-    done
+    # Run all tests in the directory using PlenaryBustedDirectory
+    nvim --headless -u tests/minimal_init.lua -c "PlenaryBustedDirectory tests" -c "qa!"
 else
     echo "Warning: neovim not found. Tests cannot be run."
     echo "Please install neovim to run the test suite."
