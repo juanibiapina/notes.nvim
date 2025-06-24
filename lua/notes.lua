@@ -117,6 +117,9 @@ function M.task_new()
   
   -- Move cursor to the new line at the end
   vim.cmd('normal! j$')
+  
+  -- Enter insert mode for immediate editing
+  vim.cmd('startinsert')
 end
 
 -- Toggle a task between done and not done. Does nothing if current line isn't a task.

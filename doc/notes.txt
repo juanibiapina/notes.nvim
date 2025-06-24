@@ -122,7 +122,8 @@ Completing items:
 
 Creating tasks:
 	Use `:NotesTaskNew` to create a new task `- [ ] ` on the next line,
-	with cursor positioned for immediate editing
+	with cursor positioned for immediate editing. The command automatically
+	enters insert mode so you can start typing the task description.
 
 Managing tasks:
 	Place cursor on a task line and use `:NotesTaskToggle` to toggle
