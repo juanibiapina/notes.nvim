@@ -4,6 +4,10 @@ describe("NotesOpen command", function()
   before_each(function()
     helpers.setup_test_env()
     helpers.clear_buffer()
+    
+    -- Load plugin for this test using absolute path
+    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.vim'
+    vim.cmd('source ' .. plugin_path)
   end)
 
   after_each(function()

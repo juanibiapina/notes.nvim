@@ -18,6 +18,11 @@ function M.setup_test_env()
   vim.cmd('cd ' .. temp_dir)
 end
 
+-- Helper function to get the plugin root directory
+function M.get_plugin_root()
+  return original_cwd
+end
+
 -- Helper function to teardown test environment
 function M.teardown_test_env()
   if temp_dir and vim.fn.isdirectory(temp_dir) == 1 then

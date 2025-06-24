@@ -1,0 +1,36 @@
+name: Copilot Environment Setup
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  setup-copilot-env:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Neovim
+      uses: rhysd/action-setup-vim@v1
+      with:
+        neovim: true
+        version: stable
+    
+    - name: Verify Neovim installation
+      run: |
+        nvim --version
+        which nvim
+    
+    - name: Run tests to verify environment
+      run: make test
+    
+    - name: Environment setup complete
+      run: |
+        echo "Copilot environment is ready with:"
+        echo "- Neovim $(nvim --version | head -n1)"
+        echo "- All tests passing"
+        echo "Ready for development and testing"

@@ -9,6 +9,10 @@ describe("NotesCompleteItem", function()
     helpers.setup_test_env()
     helpers.clear_buffer()
     
+    -- Load plugin for this test using absolute path
+    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.vim'
+    vim.cmd('source ' .. plugin_path)
+    
     today = helpers.get_today_date()
     tempfile_path = helpers.get_temp_dir() .. '/daily/' .. today .. '.md'
     
