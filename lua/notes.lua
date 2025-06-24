@@ -13,8 +13,6 @@ local function is_complete_task(line)
   return line:match('^%s*-%s+%[x%]') ~= nil
 end
 
-
-
 -- Open a note file, automatically appending .md extension if not present
 -- Creates file with header if it doesn't exist
 function M.notes_open(title)
@@ -217,8 +215,6 @@ local function handle_task_toggle()
 
   return false
 end
-
-
 
 -- Magic command that combines multiple behaviors based on context
 function M.magic()
