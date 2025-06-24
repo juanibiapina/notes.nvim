@@ -1,6 +1,6 @@
 local helpers = require('tests.support.helpers')
 
-describe("opening links with a Plug mapping", function()
+describe("opening links with NotesOpenCurrent", function()
   local open_current_cmd
 
   before_each(function()
@@ -8,10 +8,10 @@ describe("opening links with a Plug mapping", function()
     helpers.clear_buffer()
 
     -- Load plugin for this test using absolute path
-    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.vim'
-    vim.cmd('source ' .. plugin_path)
+    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.lua'
+    vim.cmd('luafile ' .. plugin_path)
 
-    -- Get the mapping command
+    -- Get the mapping command for backward compatibility testing
     local mappings = vim.api.nvim_get_keymap('n')
     for _, mapping in ipairs(mappings) do
       if mapping.lhs == '<Plug>NotesOpenCurrent' then
@@ -24,6 +24,34 @@ describe("opening links with a Plug mapping", function()
 
   after_each(function()
     helpers.teardown_test_env()
+  end)
+
+  -- Test using the new command directly
+  it("command works from an obsidian link", function()
+    -- given
+    helpers.set_buffer_content('- This is [[The Target]]')
+    vim.cmd('normal! gg')
+
+    -- when
+    vim.cmd('NotesOpenCurrent')
+
+    -- then
+    local filename = vim.fn.expand('%:t')
+    assert.are.equal('The Target.md', filename)
+  end)
+
+  -- Test using the Lua function directly
+  it("lua function works from an obsidian link", function()
+    -- given
+    helpers.set_buffer_content('- This is [[The Direct Target]]')
+    vim.cmd('normal! gg')
+
+    -- when
+    require('notes').open_current()
+
+    -- then
+    local filename = vim.fn.expand('%:t')
+    assert.are.equal('The Direct Target.md', filename)
   end)
 
   it("from an obsidian link, one per line", function()
