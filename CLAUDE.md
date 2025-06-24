@@ -14,14 +14,14 @@ This is a Neovim plugin for note-taking, written in VimScript. It provides funct
 Always practice TDD: New code is only allowed if there's a broken test that justifies it.
 
 ### Testing
-- `bundle exec rspec` - Run all tests
-- `bundle exec rspec spec/main_spec.rb` - Run specific test file
-- `bundle install` - Install Ruby dependencies
+- `make test` - Run all tests using plenary.nvim
+- `./run_tests.sh` - Direct test runner script
+- Tests require Neovim to be installed
 
 ### Project Structure
 - `plugin/notes.vim` - Main plugin file containing all VimScript functions
-- `spec/` - RSpec tests using vimrunner for Vim integration testing
-- `Gemfile` - Ruby dependencies (rspec, vimrunner, pry)
+- `tests/` - Lua tests using plenary.test_harness for Neovim integration testing
+- `run_tests.sh` - Test runner script that downloads plenary.nvim if needed
 
 ## Architecture
 
@@ -39,7 +39,7 @@ The `:NotesOpen` command accepts a note name and automatically appends the `.md`
 
 ## Testing Setup
 
-Tests use vimrunner to spawn actual Vim instances and test plugin functionality. The test setup:
+Tests use plenary.test_harness to run within Neovim and test plugin functionality. The test setup:
 - Uses temporary directories for daily files
 - Tests both single and multiple link scenarios  
 - Verifies cursor position detection for multiple links on same line

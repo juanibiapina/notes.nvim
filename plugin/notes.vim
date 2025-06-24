@@ -1,7 +1,4 @@
-" directory where daily files will be stored
-" this variable is overridden by tests
-" must end with a slash
-let g:notes_done_directory = "daily/"
+
 
 " Treats the current line as a link and open that file
 " First it looks for obsidian style links
@@ -59,8 +56,13 @@ endfunction
 " This format is compatible with Obsidian daily notes
 function! s:complete_item()
   let l:today = strftime("%Y-%m-%d")
-  let l:done_filename = g:notes_done_directory . l:today . '.md'
+  let l:done_filename = "daily/" . l:today . '.md'
   let l:current_line = getline(".")
+
+  " Create the daily directory if it doesn't exist
+  if !isdirectory("daily")
+    call mkdir("daily", "p")
+  endif
 
   " Check if the daily file exists, if not, create it with a date header
   if !filereadable(l:done_filename)
