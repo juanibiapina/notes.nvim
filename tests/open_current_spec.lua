@@ -101,7 +101,7 @@ describe('opening links with NotesOpenCurrent', function()
     assert.are.equal('The Other Target.md', filename)
   end)
 
-  it('from a list item', function()
+  it('does nothing when not on obsidian link', function()
     -- given
     helpers.set_buffer_content('- The Target')
     vim.cmd('normal! gg')
@@ -111,6 +111,6 @@ describe('opening links with NotesOpenCurrent', function()
 
     -- then
     local filename = vim.fn.expand('%:t')
-    assert.are.equal('The Target.md', filename)
+    assert.are.equal('', filename)
   end)
 end)

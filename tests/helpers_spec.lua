@@ -49,11 +49,13 @@ describe('Line analysis helpers', function()
       helpers.set_buffer_content('- regular list item')
       vim.cmd('normal! gg')
 
-      -- Use magic to verify it's treated as list item, not task
+      -- Use magic to verify it does nothing (no longer treated as list item)
       vim.cmd('NotesMagic')
 
+      local line = vim.fn.getline(1)
+      assert.are.equal('- regular list item', line)
       local filename = vim.fn.expand('%:t')
-      assert.are.equal('regular list item.md', filename)
+      assert.are.equal('', filename)
     end)
 
     it('does not detect regular text as tasks', function()

@@ -106,8 +106,8 @@ describe('NotesMagic command', function()
     end)
   end)
 
-  describe('Priority 3: List item behavior', function()
-    it('opens list item when not a task and no obsidian link', function()
+  describe('Priority 3: Do nothing behavior', function()
+    it('does nothing when on list item (no obsidian link)', function()
       -- Given
       helpers.set_buffer_content('- The Target Note')
       vim.cmd('normal! gg')
@@ -116,11 +116,13 @@ describe('NotesMagic command', function()
       vim.cmd('NotesMagic')
 
       -- Then
+      local line = vim.fn.getline(1)
+      assert.are.equal('- The Target Note', line)
       local filename = vim.fn.expand('%:t')
-      assert.are.equal('The Target Note.md', filename)
+      assert.are.equal('', filename) -- should not open a file
     end)
 
-    it('opens indented list item', function()
+    it('does nothing when on indented list item', function()
       -- Given
       helpers.set_buffer_content('  - Indented Note')
       vim.cmd('normal! gg')
@@ -129,11 +131,13 @@ describe('NotesMagic command', function()
       vim.cmd('NotesMagic')
 
       -- Then
+      local line = vim.fn.getline(1)
+      assert.are.equal('  - Indented Note', line)
       local filename = vim.fn.expand('%:t')
-      assert.are.equal('Indented Note.md', filename)
+      assert.are.equal('', filename) -- should not open a file
     end)
 
-    it('handles list item with extra whitespace', function()
+    it('does nothing when on list item with extra whitespace', function()
       -- Given
       helpers.set_buffer_content('-   Spaced Note   ')
       vim.cmd('normal! gg')
@@ -142,8 +146,10 @@ describe('NotesMagic command', function()
       vim.cmd('NotesMagic')
 
       -- Then
+      local line = vim.fn.getline(1)
+      assert.are.equal('-   Spaced Note   ', line)
       local filename = vim.fn.expand('%:t')
-      assert.are.equal('Spaced Note.md', filename)
+      assert.are.equal('', filename) -- should not open a file
     end)
   end)
 
