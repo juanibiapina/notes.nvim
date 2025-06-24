@@ -1,3 +1,3 @@
 .PHONY: test
 test:
-	bundle exec rspec
+	nvim --headless -c "PlenaryBustedDirectory tests {minimal_init = 'tests/minimal_init.vim'}"
