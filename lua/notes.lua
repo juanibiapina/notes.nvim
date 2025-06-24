@@ -157,9 +157,9 @@ function M.task_toggle()
   -- Do nothing if the line doesn't match task patterns
 end
 
--- Magic command that combines multiple behaviors based on context
--- Priority: 1) obsidian link, 2) task toggle, 3) list item, 4) do nothing
-function M.magic()
+-- Priority 1: Handle obsidian link behavior
+-- Returns true if an obsidian link was found and handled, false otherwise
+local function handle_obsidian_link_priority()
   local line = vim.fn.getline('.')
   local cursor_col = vim.fn.col('.')
   local pattern = '%[%[(.-)%]%]'
@@ -180,34 +180,66 @@ function M.magic()
     start = match_end + 1
   end
 
-  -- Priority 1: Check if cursor is on an obsidian link
+  -- Check if cursor is on an obsidian link
   if #matches > 0 then
     for _, match in ipairs(matches) do
       if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
         -- Cursor is on this link, open it
         M.notes_open(match.inner_text)
-        return
+        return true
       end
     end
   end
 
-  -- Priority 2: Check if current line is a task and toggle it
+  return false
+end
+
+-- Priority 2: Handle task toggle behavior
+-- Returns true if a task was found and toggled, false otherwise
+local function handle_task_toggle_priority()
+  local line = vim.fn.getline('.')
+  
   if is_task_line(line) then
     M.task_toggle()
-    return
+    return true
   end
+  
+  return false
+end
 
-  -- Priority 3: Check if current line is a list item and open it
+-- Priority 3: Handle list item behavior
+-- Returns true if a list item was found and opened, false otherwise
+local function handle_list_item_priority()
+  local line = vim.fn.getline('.')
+  
   if is_list_item(line) then
     local title = line:gsub('^%s*-%s+', '')
     -- Only open if there's actual content after the dash
     title = title:gsub('^%s*(.-)%s*$', '%1') -- trim whitespace
     if title and title ~= '' then
       M.notes_open(title)
-      return
+      return true
     end
   end
+  
+  return false
+end
 
+-- Magic command that combines multiple behaviors based on context
+-- Priority: 1) obsidian link, 2) task toggle, 3) list item, 4) do nothing
+function M.magic()
+  if handle_obsidian_link_priority() then
+    return
+  end
+  
+  if handle_task_toggle_priority() then
+    return
+  end
+  
+  if handle_list_item_priority() then
+    return
+  end
+  
   -- Priority 4: Do nothing (no applicable context found)
 end
 
