@@ -16,6 +16,10 @@ function M.setup_test_env()
 
   -- Change to temporary directory
   vim.cmd('cd ' .. temp_dir)
+  
+  -- Clear buffer and load plugin as part of setup
+  M.clear_buffer()
+  M.load_plugin()
 end
 
 -- Helper function to get the plugin root directory

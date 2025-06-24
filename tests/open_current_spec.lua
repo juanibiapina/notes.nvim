@@ -5,10 +5,6 @@ describe("opening links with NotesOpenCurrent", function()
 
   before_each(function()
     helpers.setup_test_env()
-    helpers.clear_buffer()
-
-    -- Load plugin for this test
-    helpers.load_plugin()
 
     -- Get the mapping command for backward compatibility testing
     local mappings = vim.api.nvim_get_keymap('n')

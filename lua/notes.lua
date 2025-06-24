@@ -46,24 +46,24 @@ function M.open_current()
     start = match_end + 1
   end
 
-  local filename
+  local title
   if #matches == 0 then
     -- If no pattern is found, strip leading '- ' and use the line if it's there
     if line:match('^%- ') then
-      filename = line:gsub('^%- ', '')
+      title = line:gsub('^%- ', '')
     else
       print("No link found")
       return
     end
   elseif #matches == 1 then
     -- If there's only one link, use it
-    filename = matches[1].inner_text
+    title = matches[1].inner_text
   else
     -- If there are multiple links, find which one the cursor is on
     local on_link = false
     for _, match in ipairs(matches) do
       if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
-        filename = match.inner_text
+        title = match.inner_text
         on_link = true
         break
       end
@@ -75,7 +75,7 @@ function M.open_current()
   end
 
   -- Use notes_open to handle file opening
-  M.notes_open(filename)
+  M.notes_open(title)
 end
 
 -- Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
