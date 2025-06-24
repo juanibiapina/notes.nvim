@@ -4,6 +4,7 @@ describe("NotesOpen command", function()
   before_each(function()
     helpers.setup_test_env()
     helpers.clear_buffer()
+    helpers.load_plugin()
   end)
 
   after_each(function()

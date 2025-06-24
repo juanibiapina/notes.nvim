@@ -8,6 +8,8 @@ describe("NotesCompleteItem", function()
   before_each(function()
     helpers.setup_test_env()
     helpers.clear_buffer()
+    helpers.load_plugin()
+    
     today = helpers.get_today_date()
     tempfile_path = helpers.get_temp_dir() .. '/' .. today .. '.md'
     
