@@ -1,8 +1,4 @@
 
--- Add the plugin root to package.path to find our lua modules
-local plugin_root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
-package.path = package.path .. ';' .. plugin_root .. '/lua/?.lua'
-
 -- Load the notes module
 local notes = require('notes')
 

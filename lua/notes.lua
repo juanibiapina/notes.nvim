@@ -2,24 +2,24 @@ local M = {}
 
 -- Open a note file, automatically appending .md extension if not present
 -- Creates file with header if it doesn't exist
-function M.notes_open(filename)
-  -- Check if filename already ends with .md
-  local final_filename
-  if not filename:match('%.md$') then
-    final_filename = filename .. '.md'
+function M.notes_open(title)
+  -- Check if title already ends with .md
+  local filename
+  if not title:match('%.md$') then
+    filename = title .. '.md'
   else
-    final_filename = filename
+    filename = title
   end
 
   -- Check if the file exists, if not, create it with a header
-  if vim.fn.filereadable(final_filename) == 0 then
+  if vim.fn.filereadable(filename) == 0 then
     -- Extract note name from filename (remove .md extension)
-    local note_name = final_filename:gsub('%.md$', '')
+    local note_name = filename:gsub('%.md$', '')
     local header = '# ' .. note_name
-    vim.fn.writefile({header}, final_filename)
+    vim.fn.writefile({header}, filename)
   end
 
-  vim.cmd('edit ' .. final_filename)
+  vim.cmd('edit ' .. filename)
 end
 
 -- Treats the current line as a link and open that file

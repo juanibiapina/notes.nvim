@@ -5,9 +5,8 @@ describe("NotesOpen command", function()
     helpers.setup_test_env()
     helpers.clear_buffer()
 
-    -- Load plugin for this test using absolute path
-    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.lua'
-    vim.cmd('luafile ' .. plugin_path)
+    -- Load plugin for this test
+    helpers.load_plugin()
   end)
 
   after_each(function()

@@ -9,9 +9,8 @@ describe("NotesCompleteItem", function()
     helpers.setup_test_env()
     helpers.clear_buffer()
 
-    -- Load plugin for this test using absolute path
-    local plugin_path = helpers.get_plugin_root() .. '/plugin/notes.lua'
-    vim.cmd('luafile ' .. plugin_path)
+    -- Load plugin for this test
+    helpers.load_plugin()
 
     today = helpers.get_today_date()
     tempfile_path = helpers.get_temp_dir() .. '/daily/' .. today .. '.md'
