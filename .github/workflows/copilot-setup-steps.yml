@@ -23,4 +23,4 @@ jobs:
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
-          version: ${{ matrix.neovim-version }}
+          version: nightly
