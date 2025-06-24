@@ -26,7 +26,7 @@ describe('Task commands', function()
       -- Cursor should be at the end of the new task line
       local cursor_pos = vim.api.nvim_win_get_cursor(0)
       assert.are.equal(2, cursor_pos[1]) -- line 2
-      assert.are.equal(5, cursor_pos[2]) -- after "- [ ] " (0-indexed)
+      assert.are.equal(6, cursor_pos[2]) -- after "- [ ] " (0-indexed)
     end)
 
     it('works when buffer is empty', function()
@@ -75,7 +75,7 @@ describe('Task commands', function()
       -- Cursor should be at the end of the new task line
       local cursor_pos = vim.api.nvim_win_get_cursor(0)
       assert.are.equal(2, cursor_pos[1]) -- line 2
-      assert.are.equal(5, cursor_pos[2]) -- after "- [ ] " (0-indexed)
+      assert.are.equal(6, cursor_pos[2]) -- after "- [ ] " (0-indexed)
     end)
   end)
 
