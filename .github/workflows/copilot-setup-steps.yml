@@ -24,3 +24,12 @@ jobs:
         with:
           neovim: true
           version: nightly
+
+      - name: Install luacheck
+        run: |
+          sudo apt update
+          sudo apt install -y luarocks
+          sudo luarocks install luacheck
+
+      - name: Install stylua
+        run: cargo install stylua
