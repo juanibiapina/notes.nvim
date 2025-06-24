@@ -59,6 +59,11 @@ function! s:complete_item()
   let l:done_filename = "daily/" . l:today . '.md'
   let l:current_line = getline(".")
 
+  " Create the daily directory if it doesn't exist
+  if !isdirectory("daily")
+    call mkdir("daily", "p")
+  endif
+
   " Check if the daily file exists, if not, create it with a date header
   if !filereadable(l:done_filename)
     call writefile([], l:done_filename)
