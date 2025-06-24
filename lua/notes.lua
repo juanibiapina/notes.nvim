@@ -157,9 +157,8 @@ function M.task_toggle()
   -- Do nothing if the line doesn't match task patterns
 end
 
--- Priority 1: Handle obsidian link behavior
 -- Returns true if an obsidian link was found and handled, false otherwise
-local function handle_obsidian_link_priority()
+local function handle_obsidian_link()
   local line = vim.fn.getline('.')
   local cursor_col = vim.fn.col('.')
   local pattern = '%[%[(.-)%]%]'
@@ -194,9 +193,8 @@ local function handle_obsidian_link_priority()
   return false
 end
 
--- Priority 2: Handle task toggle behavior
 -- Returns true if a task was found and toggled, false otherwise
-local function handle_task_toggle_priority()
+local function handle_task_toggle()
   local line = vim.fn.getline('.')
   
   if is_task_line(line) then
@@ -207,9 +205,8 @@ local function handle_task_toggle_priority()
   return false
 end
 
--- Priority 3: Handle list item behavior
 -- Returns true if a list item was found and opened, false otherwise
-local function handle_list_item_priority()
+local function handle_list_item()
   local line = vim.fn.getline('.')
   
   if is_list_item(line) then
@@ -226,21 +223,20 @@ local function handle_list_item_priority()
 end
 
 -- Magic command that combines multiple behaviors based on context
--- Priority: 1) obsidian link, 2) task toggle, 3) list item, 4) do nothing
 function M.magic()
-  if handle_obsidian_link_priority() then
+  if handle_obsidian_link() then
     return
   end
   
-  if handle_task_toggle_priority() then
+  if handle_task_toggle() then
     return
   end
   
-  if handle_list_item_priority() then
+  if handle_list_item() then
     return
   end
   
-  -- Priority 4: Do nothing (no applicable context found)
+  -- Do nothing (no applicable context found)
 end
 
 return M
