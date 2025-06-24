@@ -16,7 +16,7 @@ end, { desc = 'Move current line to daily file' })
 
 vim.api.nvim_create_user_command('NotesDailyToday', function()
   notes.daily_today()
-end, { desc = 'Open today\'s daily file' })
+end, { desc = "Open today's daily file" })
 
 vim.api.nvim_create_user_command('NotesTaskNew', function()
   notes.task_new()

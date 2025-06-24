@@ -15,7 +15,7 @@ describe('NotesDailyToday', function()
     helpers.teardown_test_env()
   end)
 
-  it('opens today\'s daily file using command', function()
+  it("opens today's daily file using command", function()
     -- When
     vim.cmd('NotesDailyToday')
 
@@ -28,7 +28,7 @@ describe('NotesDailyToday', function()
     assert.are.equal('# ' .. today, content)
   end)
 
-  it('lua function works to open today\'s daily file', function()
+  it("lua function works to open today's daily file", function()
     -- When
     require('notes').daily_today()
 
@@ -41,7 +41,7 @@ describe('NotesDailyToday', function()
     assert.are.equal('# ' .. today, content)
   end)
 
-  it('creates daily directory if it doesn\'t exist', function()
+  it("creates daily directory if it doesn't exist", function()
     -- Given - directory should not exist yet
     assert.are.equal(0, vim.fn.isdirectory(helpers.get_temp_dir() .. '/daily'))
 
