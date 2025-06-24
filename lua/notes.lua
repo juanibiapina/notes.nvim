@@ -140,4 +140,58 @@ function M.task_toggle()
   -- Do nothing if the line doesn't match task patterns
 end
 
+-- Magic command that combines multiple behaviors based on context
+-- Priority: 1) obsidian link, 2) task toggle, 3) list item, 4) do nothing
+function M.magic()
+  local line = vim.fn.getline('.')
+  local cursor_col = vim.fn.col('.')
+  local pattern = '%[%[(.-)%]%]'
+  local matches = {}
+
+  -- Find all obsidian style links on the line
+  local start = 1
+  while true do
+    local match_start, match_end, match_text = line:find(pattern, start)
+    if not match_start then
+      break
+    end
+    table.insert(matches, {
+      text = '[[' .. match_text .. ']]',
+      pos = match_start,
+      inner_text = match_text
+    })
+    start = match_end + 1
+  end
+
+  -- Priority 1: Check if cursor is on an obsidian link
+  if #matches > 0 then
+    for _, match in ipairs(matches) do
+      if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
+        -- Cursor is on this link, open it
+        M.notes_open(match.inner_text)
+        return
+      end
+    end
+  end
+
+  -- Priority 2: Check if current line is a task and toggle it
+  if line:match('^%s*-%s+%[[ x]%]') then
+    M.task_toggle()
+    return
+  end
+
+  -- Priority 3: Check if current line is a list item and open it
+  if line:match('^%s*-%s+') then
+    local title = line:gsub('^%s*-%s+', '')
+    -- Only open if there's actual content after the dash
+    title = title:gsub('^%s*(.-)%s*$', '%1') -- trim whitespace
+    if title and title ~= '' then
+      M.notes_open(title)
+      return
+    end
+  end
+
+  -- Priority 4: Do nothing (no applicable context found)
+end
+
 return M
