@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Linting script for Lua code
+set -e
+
+echo "Running Lua linting checks..."
+echo "=============================="
+
+# Run luacheck (static analysis)
+echo "1. Running luacheck (static analysis)..."
+if ! luacheck .; then
+    echo "❌ Luacheck failed!"
+    exit 1
+fi
+echo "✅ Luacheck passed!"
+
+echo ""
+echo "2. Running stylua (code formatting check)..."
+if ! stylua --check .; then
+    echo "❌ Stylua formatting check failed!"
+    echo "💡 Run 'stylua .' to auto-fix formatting issues"
+    exit 1
+fi
+echo "✅ Stylua formatting check passed!"
+
+echo ""
+echo "🎉 All linting checks passed!"

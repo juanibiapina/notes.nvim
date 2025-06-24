@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# CI script that runs tests and linting
+set -e
+
+echo "Running CI checks for notes.nvim..."
+echo "======================================"
+
+# Run linting
+echo "Running linting checks..."
+if ! ./bin/lint; then
+    echo "❌ Linting failed!"
+    exit 1
+fi
+
+echo ""
+echo "Running tests..."
+if ! ./bin/test; then
+    echo "❌ Tests failed!"
+    exit 1
+fi
+
+echo ""
+echo "🎉 All CI checks passed!"

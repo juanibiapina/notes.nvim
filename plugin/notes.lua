@@ -1,4 +1,3 @@
-
 -- Load the notes module
 local notes = require('notes')
 

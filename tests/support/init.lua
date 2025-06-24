@@ -5,4 +5,3 @@ if vim.fn.isdirectory(plenary_path) == 1 then
 else
   error("plenary.nvim not found. Run './run_tests.sh' to download it automatically.")
 end
-

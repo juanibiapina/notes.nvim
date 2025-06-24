@@ -1,3 +1,10 @@
-.PHONY: test
+.PHONY: test lint ci
+
 test:
-	./run_tests.sh
+	./bin/test
+
+lint:
+	./bin/lint
+
+ci:
+	./bin/ci

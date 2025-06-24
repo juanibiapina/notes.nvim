@@ -1,6 +1,6 @@
 local helpers = require('tests.support.helpers')
 
-describe("opening links with NotesOpenCurrent", function()
+describe('opening links with NotesOpenCurrent', function()
   local open_current_cmd
 
   before_each(function()
@@ -14,7 +14,7 @@ describe("opening links with NotesOpenCurrent", function()
         break
       end
     end
-    assert(open_current_cmd, "NotesOpenCurrent mapping not found")
+    assert(open_current_cmd, 'NotesOpenCurrent mapping not found')
   end)
 
   after_each(function()
@@ -22,7 +22,7 @@ describe("opening links with NotesOpenCurrent", function()
   end)
 
   -- Test using the new command directly
-  it("command works from an obsidian link", function()
+  it('command works from an obsidian link', function()
     -- given
     helpers.set_buffer_content('- This is [[The Target]]')
     vim.cmd('normal! gg')
@@ -36,7 +36,7 @@ describe("opening links with NotesOpenCurrent", function()
   end)
 
   -- Test using the Lua function directly
-  it("lua function works from an obsidian link", function()
+  it('lua function works from an obsidian link', function()
     -- given
     helpers.set_buffer_content('- This is [[The Direct Target]]')
     vim.cmd('normal! gg')
@@ -49,7 +49,7 @@ describe("opening links with NotesOpenCurrent", function()
     assert.are.equal('The Direct Target.md', filename)
   end)
 
-  it("from an obsidian link, one per line", function()
+  it('from an obsidian link, one per line', function()
     -- given
     helpers.set_buffer_content('- This is [[The Target]]')
     vim.cmd('normal! gg')
@@ -62,7 +62,7 @@ describe("opening links with NotesOpenCurrent", function()
     assert.are.equal('The Target.md', filename)
   end)
 
-  it("from an obsidian link, two per line, not on link", function()
+  it('from an obsidian link, two per line, not on link', function()
     -- given
     helpers.set_buffer_content('- a [[The Target]] a [[The Other Target]]')
     vim.cmd('normal! gg')
@@ -75,7 +75,7 @@ describe("opening links with NotesOpenCurrent", function()
     assert.are.equal('', filename)
   end)
 
-  it("from an obsidian link, two per line, first link", function()
+  it('from an obsidian link, two per line, first link', function()
     -- given
     helpers.set_buffer_content('- a [[The Target]] a [[The Other Target]]')
     vim.cmd('normal! gglllllll')
@@ -88,7 +88,7 @@ describe("opening links with NotesOpenCurrent", function()
     assert.are.equal('The Target.md', filename)
   end)
 
-  it("from an obsidian link, two per line, second link", function()
+  it('from an obsidian link, two per line, second link', function()
     -- given
     helpers.set_buffer_content('- a [[The Target]] a [[The Other Target]]')
     vim.cmd('normal! ggllllllllllllllllllllllll')
@@ -101,7 +101,7 @@ describe("opening links with NotesOpenCurrent", function()
     assert.are.equal('The Other Target.md', filename)
   end)
 
-  it("from a list item", function()
+  it('from a list item', function()
     -- given
     helpers.set_buffer_content('- The Target')
     vim.cmd('normal! gg')
