@@ -9,6 +9,7 @@ This plugin provides functionality for note-taking in Neovim with support for:
 - Opening links in Obsidian-style double brackets format `[[filename]]`
 - Opening files from list items (lines starting with `- `)
 - Moving completed items to daily files (compatible with Obsidian daily notes)
+- Creating and managing tasks with checkboxes
 
 The plugin is written in Lua and exposes both commands and Lua functions for
 programmatic access.
@@ -50,6 +51,19 @@ COMMANDS						*notes-commands*
 	- Removes current line from original file
 	- Compatible with Obsidian daily notes format
 
+:NotesTaskNew						*:NotesTaskNew*
+	Creates a new empty task on the next line:
+	- Inserts `- [ ] ` on the line below the cursor
+	- Positions cursor at the end for immediate editing
+	- Works from any line in the buffer
+
+:NotesTaskToggle					*:NotesTaskToggle*
+	Toggles task completion status:
+	- Changes `- [ ]` to `- [x]` (marks task as done)
+	- Changes `- [x]` to `- [ ]` (marks task as not done)
+	- Works with indented tasks
+	- Does nothing if current line is not a task
+
 LUA FUNCTIONS						*notes-functions*
 
 All commands are also available as Lua functions for programmatic access:
@@ -63,6 +77,12 @@ require('notes').open_current()				*notes.open_current()*
 require('notes').complete_item()			*notes.complete_item()*
 	Lua equivalent of `:NotesCompleteItem` command.
 
+require('notes').task_new()				*notes.task_new()*
+	Lua equivalent of `:NotesTaskNew` command.
+
+require('notes').task_toggle()				*notes.task_toggle()*
+	Lua equivalent of `:NotesTaskToggle` command.
+
 MAPPINGS						*notes-mappings*
 
 The plugin does not set any default mappings. You can create your own: >
@@ -70,10 +90,14 @@ The plugin does not set any default mappings. You can create your own: >
 	" Example mappings using commands
 	nmap <leader>no :NotesOpenCurrent<CR>
 	nmap <leader>nc :NotesCompleteItem<CR>
+	nmap <leader>nt :NotesTaskNew<CR>
+	nmap <leader>ng :NotesTaskToggle<CR>
 
 	" Example mappings using Lua functions
 	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
 	nnoremap <leader>nc <cmd>lua require('notes').complete_item()<CR>
+	nnoremap <leader>nt <cmd>lua require('notes').task_new()<CR>
+	nnoremap <leader>ng <cmd>lua require('notes').task_toggle()<CR>
 <
 
 For backward compatibility, <Plug> mappings are still available: >
@@ -95,6 +119,15 @@ Opening list items:
 Completing items:
 	Place cursor on any line and use `:NotesCompleteItem` to move
 	that line to today's daily file in the configured directory
+
+Creating tasks:
+	Use `:NotesTaskNew` to create a new task `- [ ] ` on the next line,
+	with cursor positioned for immediate editing. The command automatically
+	enters insert mode so you can start typing the task description.
+
+Managing tasks:
+	Place cursor on a task line and use `:NotesTaskToggle` to toggle
+	between `- [ ]` (not done) and `- [x]` (done)
 
 Multiple links on one line:
 	If a line contains `[[link1]] and [[link2]]`, the plugin will open
