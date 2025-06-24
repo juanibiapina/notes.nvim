@@ -1,5 +1,2 @@
 # Test dependencies
 tests/plenary.nvim/
-
-# Neovim
-.nvim/
