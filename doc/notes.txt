@@ -64,6 +64,16 @@ COMMANDS						*notes-commands*
 	- Works with indented tasks
 	- Does nothing if current line is not a task
 
+:NotesMagic						*:NotesMagic*
+	Smart command that behaves contextually based on cursor position:
+	1. If cursor is on an Obsidian-style link `[[filename]]`, follows the link
+	2. Otherwise, if current line is a task, toggles the task completion
+	3. Otherwise, if current line is a list item, opens it as a note
+	4. Otherwise, does nothing
+	
+	This command works well when assigned to a hotkey like "Enter" for
+	context-aware note navigation and task management.
+
 LUA FUNCTIONS						*notes-functions*
 
 All commands are also available as Lua functions for programmatic access:
@@ -83,6 +93,9 @@ require('notes').task_new()				*notes.task_new()*
 require('notes').task_toggle()				*notes.task_toggle()*
 	Lua equivalent of `:NotesTaskToggle` command.
 
+require('notes').magic()				*notes.magic()*
+	Lua equivalent of `:NotesMagic` command.
+
 MAPPINGS						*notes-mappings*
 
 The plugin does not set any default mappings. You can create your own: >
@@ -92,12 +105,14 @@ The plugin does not set any default mappings. You can create your own: >
 	nmap <leader>nc :NotesCompleteItem<CR>
 	nmap <leader>nt :NotesTaskNew<CR>
 	nmap <leader>ng :NotesTaskToggle<CR>
+	nmap <CR> :NotesMagic<CR>
 
 	" Example mappings using Lua functions
 	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
 	nnoremap <leader>nc <cmd>lua require('notes').complete_item()<CR>
 	nnoremap <leader>nt <cmd>lua require('notes').task_new()<CR>
 	nnoremap <leader>ng <cmd>lua require('notes').task_toggle()<CR>
+	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
 <
 
 For backward compatibility, <Plug> mappings are still available: >
@@ -128,6 +143,15 @@ Creating tasks:
 Managing tasks:
 	Place cursor on a task line and use `:NotesTaskToggle` to toggle
 	between `- [ ]` (not done) and `- [x]` (done)
+
+Smart context-aware command:
+	Use `:NotesMagic` for context-aware behavior:
+	- On `[[link]]`: follows the link
+	- On `- [ ] task`: toggles task completion
+	- On `- list item`: opens as note
+	- Otherwise: does nothing
+	
+	Perfect for mapping to Enter key for intuitive navigation
 
 Multiple links on one line:
 	If a line contains `[[link1]] and [[link2]]`, the plugin will open

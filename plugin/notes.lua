@@ -23,6 +23,10 @@ vim.api.nvim_create_user_command('NotesTaskToggle', function()
   notes.task_toggle()
 end, { desc = 'Toggle task between done and not done' })
 
+vim.api.nvim_create_user_command('NotesMagic', function()
+  notes.magic()
+end, { desc = 'Smart command: follow link, toggle task, or open list item' })
+
 -- For backward compatibility, keep the <Plug> mappings that call the commands
 vim.api.nvim_set_keymap('n', '<Plug>NotesOpenCurrent', ':NotesOpenCurrent<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Plug>NotesCompleteItem', ':NotesCompleteItem<CR>', { noremap = true, silent = true })
