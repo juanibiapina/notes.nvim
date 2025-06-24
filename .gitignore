@@ -1,2 +1,5 @@
 # Test dependencies
 vendor/
+
+# Test files created during development
+*.md
