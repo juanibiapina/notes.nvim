@@ -4,8 +4,8 @@ local M = {}
 local original_cwd = nil
 local temp_dir = nil
 
--- Helper function to setup test environment
-function M.setup_test_env()
+-- Helper function to setup working directory for tests
+function M.setup_working_directory()
   if not original_cwd then
     original_cwd = vim.fn.getcwd()
   end
@@ -16,8 +16,11 @@ function M.setup_test_env()
 
   -- Change to temporary directory
   vim.cmd('cd ' .. temp_dir)
-  
-  -- Clear buffer and load plugin as part of setup
+end
+
+-- Helper function to setup test environment
+function M.setup_test_env()
+  M.setup_working_directory()
   M.clear_buffer()
   M.load_plugin()
 end
