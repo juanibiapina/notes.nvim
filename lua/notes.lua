@@ -1,5 +1,22 @@
 local M = {}
 
+-- Helper functions for line analysis
+local function is_task_line(line)
+  return line:match('^%s*-%s+%[[ x]%]') ~= nil
+end
+
+local function is_incomplete_task(line)
+  return line:match('^%s*-%s+%[ %]') ~= nil
+end
+
+local function is_complete_task(line)
+  return line:match('^%s*-%s+%[x%]') ~= nil
+end
+
+local function is_list_item(line)
+  return line:match('^%s*-%s+') ~= nil
+end
+
 -- Open a note file, automatically appending .md extension if not present
 -- Creates file with header if it doesn't exist
 function M.notes_open(title)
@@ -128,11 +145,11 @@ function M.task_toggle()
   local line_num = vim.fn.line('.')
   
   -- Check if line contains an incomplete task pattern
-  if line:match('^%s*-%s+%[ %]') then
+  if is_incomplete_task(line) then
     -- Change [ ] to [x]
     local new_line = line:gsub('%[ %]', '[x]', 1)
     vim.fn.setline(line_num, new_line)
-  elseif line:match('^%s*-%s+%[x%]') then
+  elseif is_complete_task(line) then
     -- Change [x] to [ ]
     local new_line = line:gsub('%[x%]', '[ ]', 1)
     vim.fn.setline(line_num, new_line)
@@ -175,13 +192,13 @@ function M.magic()
   end
 
   -- Priority 2: Check if current line is a task and toggle it
-  if line:match('^%s*-%s+%[[ x]%]') then
+  if is_task_line(line) then
     M.task_toggle()
     return
   end
 
   -- Priority 3: Check if current line is a list item and open it
-  if line:match('^%s*-%s+') then
+  if is_list_item(line) then
     local title = line:gsub('^%s*-%s+', '')
     -- Only open if there's actual content after the dash
     title = title:gsub('^%s*(.-)%s*$', '%1') -- trim whitespace

@@ -50,6 +50,19 @@ describe("NotesMagic command", function()
       local filename = vim.fn.expand('%:t')
       assert.are.equal('', filename) -- should not open a file
     end)
+
+    it("follows obsidian link in task text when cursor is on link", function()
+      -- Given
+      helpers.set_buffer_content('- [ ] Check out [[Task Link]] for details')
+      vim.cmd('normal! gglllllllllllllllll') -- Position cursor on "Task Link"
+
+      -- When
+      vim.cmd('NotesMagic')
+
+      -- Then - should follow link instead of toggling task
+      local filename = vim.fn.expand('%:t')
+      assert.are.equal('Task Link.md', filename)
+    end)
   end)
 
   describe("Priority 2: Task toggle behavior", function()
