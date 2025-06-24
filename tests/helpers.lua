@@ -29,12 +29,6 @@ function M.teardown_test_env()
   end
 end
 
--- Helper function to load the plugin from the original directory
-function M.load_plugin()
-  local plugin_path = '/home/runner/work/notes.nvim/notes.nvim/plugin/notes.vim'
-  vim.cmd('source ' .. plugin_path)
-end
-
 -- Helper function to clear current buffer
 function M.clear_buffer()
   vim.cmd('enew!')

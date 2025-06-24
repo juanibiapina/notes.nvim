@@ -6,7 +6,6 @@ describe("opening links with a Plug mapping", function()
   before_each(function()
     helpers.setup_test_env()
     helpers.clear_buffer()
-    helpers.load_plugin()
     
     -- Get the mapping command
     local mappings = vim.api.nvim_get_keymap('n')
