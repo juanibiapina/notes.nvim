@@ -22,5 +22,20 @@ jobs:
         neovim: true
         version: ${{ matrix.neovim-version }}
 
+    - name: Install Lua linters
+      run: |
+        # Install stylua via cargo
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source ~/.cargo/env
+        cargo install stylua
+        
+        # Install luacheck via luarocks
+        sudo apt update
+        sudo apt install -y luarocks
+        sudo luarocks install luacheck
+
+    - name: Run lint checks
+      run: make lint
+
     - name: Run tests
       run: make test

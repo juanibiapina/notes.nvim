@@ -1,6 +1,6 @@
 local helpers = require('tests.support.helpers')
 
-describe("NotesMagic command", function()
+describe('NotesMagic command', function()
   before_each(function()
     helpers.setup_test_env()
   end)
@@ -9,8 +9,8 @@ describe("NotesMagic command", function()
     helpers.teardown_test_env()
   end)
 
-  describe("Priority 1: Obsidian link behavior", function()
-    it("follows link when cursor is on obsidian link", function()
+  describe('Priority 1: Obsidian link behavior', function()
+    it('follows link when cursor is on obsidian link', function()
       -- Given
       helpers.set_buffer_content('- This is [[The Target]] some text')
       vim.cmd('normal! ggllllllllll') -- Position cursor on "Target"
@@ -23,7 +23,7 @@ describe("NotesMagic command", function()
       assert.are.equal('The Target.md', filename)
     end)
 
-    it("follows correct link when multiple links on same line", function()
+    it('follows correct link when multiple links on same line', function()
       -- Given
       helpers.set_buffer_content('- a [[First Link]] and [[Second Link]]')
       vim.cmd('normal! ggllllllllllllllllllllllll') -- Position cursor on "Second Link"
@@ -36,7 +36,7 @@ describe("NotesMagic command", function()
       assert.are.equal('Second Link.md', filename)
     end)
 
-    it("does not follow link when cursor is not on link", function()
+    it('does not follow link when cursor is not on link', function()
       -- Given
       helpers.set_buffer_content('- [ ] This is [[The Target]] some text')
       vim.cmd('normal! gg') -- Position cursor at beginning (on task)
@@ -51,7 +51,7 @@ describe("NotesMagic command", function()
       assert.are.equal('', filename) -- should not open a file
     end)
 
-    it("follows obsidian link in task text when cursor is on link", function()
+    it('follows obsidian link in task text when cursor is on link', function()
       -- Given
       helpers.set_buffer_content('- [ ] Check out [[Task Link]] for details')
       vim.cmd('normal! gglllllllllllllllll') -- Position cursor on "Task Link"
@@ -65,8 +65,8 @@ describe("NotesMagic command", function()
     end)
   end)
 
-  describe("Priority 2: Task toggle behavior", function()
-    it("toggles incomplete task to complete when not on link", function()
+  describe('Priority 2: Task toggle behavior', function()
+    it('toggles incomplete task to complete when not on link', function()
       -- Given
       helpers.set_buffer_content('- [ ] do something')
       vim.cmd('normal! gg')
@@ -79,7 +79,7 @@ describe("NotesMagic command", function()
       assert.are.equal('- [x] do something', line)
     end)
 
-    it("toggles complete task to incomplete when not on link", function()
+    it('toggles complete task to incomplete when not on link', function()
       -- Given
       helpers.set_buffer_content('- [x] done task')
       vim.cmd('normal! gg')
@@ -92,7 +92,7 @@ describe("NotesMagic command", function()
       assert.are.equal('- [ ] done task', line)
     end)
 
-    it("toggles indented task", function()
+    it('toggles indented task', function()
       -- Given
       helpers.set_buffer_content('  - [ ] indented task')
       vim.cmd('normal! gg')
@@ -106,8 +106,8 @@ describe("NotesMagic command", function()
     end)
   end)
 
-  describe("Priority 3: List item behavior", function()
-    it("opens list item when not a task and no obsidian link", function()
+  describe('Priority 3: List item behavior', function()
+    it('opens list item when not a task and no obsidian link', function()
       -- Given
       helpers.set_buffer_content('- The Target Note')
       vim.cmd('normal! gg')
@@ -120,7 +120,7 @@ describe("NotesMagic command", function()
       assert.are.equal('The Target Note.md', filename)
     end)
 
-    it("opens indented list item", function()
+    it('opens indented list item', function()
       -- Given
       helpers.set_buffer_content('  - Indented Note')
       vim.cmd('normal! gg')
@@ -133,7 +133,7 @@ describe("NotesMagic command", function()
       assert.are.equal('Indented Note.md', filename)
     end)
 
-    it("handles list item with extra whitespace", function()
+    it('handles list item with extra whitespace', function()
       -- Given
       helpers.set_buffer_content('-   Spaced Note   ')
       vim.cmd('normal! gg')
@@ -147,8 +147,8 @@ describe("NotesMagic command", function()
     end)
   end)
 
-  describe("Priority 4: Do nothing behavior", function()
-    it("does nothing when line has no applicable context", function()
+  describe('Priority 4: Do nothing behavior', function()
+    it('does nothing when line has no applicable context', function()
       -- Given
       helpers.set_buffer_content('Some regular text')
       vim.cmd('normal! gg')
@@ -163,7 +163,7 @@ describe("NotesMagic command", function()
       assert.are.equal('', filename) -- should not open a file
     end)
 
-    it("does nothing when on empty list item", function()
+    it('does nothing when on empty list item', function()
       -- Given
       helpers.set_buffer_content('- ')
       vim.cmd('normal! gg')
@@ -178,7 +178,7 @@ describe("NotesMagic command", function()
       assert.are.equal('', filename) -- should not open a file
     end)
 
-    it("does nothing when on list item with only whitespace", function()
+    it('does nothing when on list item with only whitespace', function()
       -- Given
       helpers.set_buffer_content('-   ')
       vim.cmd('normal! gg')
@@ -194,8 +194,8 @@ describe("NotesMagic command", function()
     end)
   end)
 
-  describe("Lua function access", function()
-    it("lua function works for obsidian link", function()
+  describe('Lua function access', function()
+    it('lua function works for obsidian link', function()
       -- Given
       helpers.set_buffer_content('- This is [[Lua Target]]')
       vim.cmd('normal! ggllllllllll') -- Position cursor on "Lua Target"
@@ -208,7 +208,7 @@ describe("NotesMagic command", function()
       assert.are.equal('Lua Target.md', filename)
     end)
 
-    it("lua function works for task toggle", function()
+    it('lua function works for task toggle', function()
       -- Given
       helpers.set_buffer_content('- [ ] lua test task')
       vim.cmd('normal! gg')

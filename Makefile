@@ -1,3 +1,11 @@
-.PHONY: test
+.PHONY: test lint ci
+
 test:
-	./run_tests.sh
+	./bin/test
+
+lint:
+	luacheck .
+	stylua --check .
+
+ci:
+	./bin/ci

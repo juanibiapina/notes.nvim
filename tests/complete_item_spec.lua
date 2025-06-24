@@ -1,6 +1,6 @@
 local helpers = require('tests.support.helpers')
 
-describe("NotesCompleteItem", function()
+describe('NotesCompleteItem', function()
   local today
   local tempfile_path
   local complete_item_cmd
@@ -19,14 +19,14 @@ describe("NotesCompleteItem", function()
         break
       end
     end
-    assert(complete_item_cmd, "NotesCompleteItem mapping not found")
+    assert(complete_item_cmd, 'NotesCompleteItem mapping not found')
   end)
 
   after_each(function()
     helpers.teardown_test_env()
   end)
 
-  it("moves the current line to daily/YYYY-MM-DD.md", function()
+  it('moves the current line to daily/YYYY-MM-DD.md', function()
     -- Given
     helpers.set_buffer_content('- Todo item')
     vim.cmd('normal! gg')
@@ -47,7 +47,7 @@ describe("NotesCompleteItem", function()
     assert.are.equal('- Todo item', daily_file_contents[1])
   end)
 
-  it("command works to move current line to daily file", function()
+  it('command works to move current line to daily file', function()
     -- Given
     helpers.set_buffer_content('- Command todo item')
     vim.cmd('normal! gg')
@@ -68,7 +68,7 @@ describe("NotesCompleteItem", function()
     assert.are.equal('- Command todo item', daily_file_contents[#daily_file_contents])
   end)
 
-  it("lua function works to move current line to daily file", function()
+  it('lua function works to move current line to daily file', function()
     -- Given
     helpers.set_buffer_content('- Lua function todo item')
     vim.cmd('normal! gg')

@@ -33,7 +33,7 @@ function M.notes_open(title)
     -- Extract note name from filename (remove .md extension)
     local note_name = filename:gsub('%.md$', '')
     local header = '# ' .. note_name
-    vim.fn.writefile({header}, filename)
+    vim.fn.writefile({ header }, filename)
   end
 
   vim.cmd('edit ' .. filename)
@@ -58,7 +58,7 @@ function M.open_current()
     table.insert(matches, {
       text = '[[' .. match_text .. ']]',
       pos = match_start,
-      inner_text = match_text
+      inner_text = match_text,
     })
     start = match_end + 1
   end
@@ -69,7 +69,7 @@ function M.open_current()
     if line:match('^%- ') then
       title = line:gsub('^%- ', '')
     else
-      print("No link found")
+      print('No link found')
       return
     end
   elseif #matches == 1 then
@@ -86,7 +86,7 @@ function M.open_current()
       end
     end
     if not on_link then
-      print("Cursor is not on a link")
+      print('Cursor is not on a link')
       return
     end
   end
@@ -128,13 +128,13 @@ end
 -- Creates a new empty, not done task on the next line
 function M.task_new()
   local current_line = vim.fn.line('.')
-  
+
   -- Insert a new line after the current line
   vim.fn.append(current_line, '- [ ] ')
-  
+
   -- Move cursor to the new line at the end
   vim.cmd('normal! j$')
-  
+
   -- Enter insert mode for immediate editing
   vim.cmd('startinsert')
 end
@@ -143,7 +143,7 @@ end
 function M.task_toggle()
   local line = vim.fn.getline('.')
   local line_num = vim.fn.line('.')
-  
+
   -- Check if line contains an incomplete task pattern
   if is_incomplete_task(line) then
     -- Change [ ] to [x]
@@ -174,7 +174,7 @@ local function handle_obsidian_link()
     table.insert(matches, {
       text = '[[' .. match_text .. ']]',
       pos = match_start,
-      inner_text = match_text
+      inner_text = match_text,
     })
     start = match_end + 1
   end
@@ -196,19 +196,19 @@ end
 -- Returns true if a task was found and toggled, false otherwise
 local function handle_task_toggle()
   local line = vim.fn.getline('.')
-  
+
   if is_task_line(line) then
     M.task_toggle()
     return true
   end
-  
+
   return false
 end
 
 -- Returns true if a list item was found and opened, false otherwise
 local function handle_list_item()
   local line = vim.fn.getline('.')
-  
+
   if is_list_item(line) then
     local title = line:gsub('^%s*-%s+', '')
     -- Only open if there's actual content after the dash
@@ -218,7 +218,7 @@ local function handle_list_item()
       return true
     end
   end
-  
+
   return false
 end
 
@@ -227,15 +227,15 @@ function M.magic()
   if handle_obsidian_link() then
     return
   end
-  
+
   if handle_task_toggle() then
     return
   end
-  
+
   if handle_list_item() then
     return
   end
-  
+
   -- Do nothing (no applicable context found)
 end
 

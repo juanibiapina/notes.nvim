@@ -68,7 +68,7 @@ function M.load_plugin()
   -- Add plugin root to runtimepath so lua modules can be found
   local plugin_root = M.get_plugin_root()
   vim.opt.rtp:prepend(plugin_root)
-  
+
   local plugin_path = plugin_root .. '/plugin/notes.lua'
   vim.cmd('luafile ' .. plugin_path)
 end
