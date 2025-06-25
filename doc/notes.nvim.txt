@@ -16,19 +16,14 @@ programmatic access.
 
 REQUIREMENTS						*notes-requirements*
 
-Optional dependencies for enhanced functionality:
-
 ripgrep							*notes-ripgrep*
-	Required for the `:NotesRename` command to find and update references
-	across all files in the project. Without ripgrep, `:NotesRename` will
-	still rename files and update headers, but references will not be
-	automatically updated.
+	Used for finding references to notes.
 	
 	Install ripgrep using your system package manager:
 	- Ubuntu/Debian: `apt install ripgrep`
 	- macOS with Homebrew: `brew install ripgrep`
 	- Arch Linux: `pacman -S ripgrep`
-	- Or download from: https://github.com/BurntSushi/ripgrep
+	- Check https://github.com/BurntSushi/ripgrep for more installation options.
 
 CONFIGURATION						*notes-configuration*
 
@@ -101,7 +96,7 @@ COMMANDS						*notes-commands*
 	- Renames the current markdown file to the new title
 	- Updates the header if it matches the old filename
 	- Finds and updates all Obsidian-style references `[[old_name]]` to `[[new_title]]`
-	- Requires ripgrep to be installed for reference updating
+	- Requires ripgrep
 	- Automatically appends `.md` extension if not provided
 	- Prevents overwriting existing files
 	
