@@ -93,16 +93,16 @@ COMMANDS						*notes-commands*
 
 :NotesRename {new_title}				*:NotesRename*
 	Rename the current note file, header and all references:
-	- Renames the current markdown file to the new title
-	- Updates the header if it matches the old filename
-	- Finds and updates all Obsidian-style references `[[old_name]]` to `[[new_title]]`
+	- Renames the current note to the new title
+	- Updates the header if it matches the old title
+	- Finds and updates all Obsidian-style references `[[old_title]]` to `[[new_title]]`
 	- Requires ripgrep
-	- Automatically appends `.md` extension if not provided
 	- Prevents overwriting existing files
+  - `.md` extension must not be included in the new title
 	
 	Examples: >
 		:NotesRename "My New Title"    " Renames current note to "My New Title.md"
-		:NotesRename new-note.md       " Renames to "new-note.md"
+		:NotesRename new-note       " Renames to "new-note.md"
 <
 
 LUA FUNCTIONS						*notes-functions*

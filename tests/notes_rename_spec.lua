@@ -82,22 +82,6 @@ describe('NotesRename command', function()
     assert.are.equal('some content', content[2])
   end)
 
-  it('handles new title with .md extension', function()
-    -- Create a test markdown file
-    helpers.create_test_file('original.md', '# original\nsome content')
-    vim.cmd('edit original.md')
-
-    -- Rename it with .md extension
-    require('notes').notes_rename('renamed.md')
-
-    -- Should be editing the new file
-    assert.are.equal('renamed.md', vim.fn.expand('%:t'))
-
-    -- Header should not have .md in it
-    local content = vim.fn.readfile('renamed.md')
-    assert.are.equal('# renamed', content[1])
-  end)
-
   it('prevents overwriting existing files', function()
     -- Create two test markdown files
     helpers.create_test_file('original.md', '# original\nsome content')
@@ -233,7 +217,7 @@ describe('NotesRename command', function()
       -- Create a file with partial matches that should NOT be updated
       helpers.create_test_file(
         'partial-matches.md',
-        '# partial-matches\nThis has exactitude and [[exact]] and exact-copy.'
+        '# partial-matches\nThis has [[exactitude]] and [[exact]] and [[exact-copy]].'
       )
 
       -- Edit the target note
@@ -244,7 +228,7 @@ describe('NotesRename command', function()
 
       -- Check that only the exact link reference was updated
       local content = vim.fn.readfile('partial-matches.md')
-      assert.are.equal('This has exactitude and [[precise]] and exact-copy.', content[2])
+      assert.are.equal('This has [[exactitude]] and [[precise]] and [[exact-copy]].', content[2])
     end)
 
     it('works when no references exist', function()

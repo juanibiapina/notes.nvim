@@ -296,7 +296,7 @@ function M.notes_rename(new_title)
   end
 
   -- Prepare new filename
-  local new_filename = new_title:match('%.md$') and new_title or (new_title .. '.md')
+  local new_filename = new_title .. '.md'
   local current_dir = vim.fn.expand('%:p:h')
   local new_file_path = current_dir .. '/' .. new_filename
 
@@ -314,7 +314,7 @@ function M.notes_rename(new_title)
 
   -- Update header if it matches the current filename
   if #content > 0 and content[1] == '# ' .. current_name then
-    content[1] = '# ' .. new_title:gsub('%.md$', '')
+    content[1] = '# ' .. new_title
   end
 
   -- Write content to new file
@@ -330,7 +330,7 @@ function M.notes_rename(new_title)
       if i == ref.line then
         -- Replace the reference in this line
         local old_ref = '[[' .. current_name .. ']]'
-        local new_ref = '[[' .. new_title:gsub('%.md$', '') .. ']]'
+        local new_ref = '[[' .. new_title .. ']]'
         file_content[i] = line:gsub(vim.pesc(old_ref), new_ref)
         break
       end
@@ -341,7 +341,7 @@ function M.notes_rename(new_title)
   -- Open the new file
   vim.cmd('edit ' .. new_file_path)
 
-  print('Renamed note from "' .. current_name .. '" to "' .. new_title:gsub('%.md$', '') .. '"')
+  print('Renamed note from "' .. current_name .. '" to "' .. new_title .. '"')
   if #references > 0 then
     print('Updated ' .. #references .. ' reference(s)')
   end
