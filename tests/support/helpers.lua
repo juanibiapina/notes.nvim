@@ -32,10 +32,19 @@ end
 
 -- Helper function to teardown test environment
 function M.teardown_test_env()
+  -- Wipe all listed buffers to prevent state leakage between tests
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted then
+      vim.api.nvim_buf_delete(bufnr, { force = true })
+    end
+  end
+
+  -- Delete the temp directory
   if temp_dir and vim.fn.isdirectory(temp_dir) == 1 then
     vim.fn.delete(temp_dir, 'rf')
   end
 
+  -- Restore original working directory
   if original_cwd then
     vim.cmd('cd ' .. original_cwd)
   end

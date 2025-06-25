@@ -104,7 +104,7 @@ describe('NotesDelete command', function()
     assert.are.equal('popular-note.md', vim.fn.expand('%:t'))
   end)
 
-  it('handles references in the same file correctly', function()
+  it('allows deletion when references are only in the same file', function()
     -- Create a note that references itself
     helpers.create_test_file('self-ref.md', '# self-ref\nThis note references itself: [[self-ref]].')
 
@@ -114,11 +114,11 @@ describe('NotesDelete command', function()
     -- Try to delete it
     require('notes').notes_delete()
 
-    -- File should still exist because it references itself
-    assert.are.equal(1, vim.fn.filereadable('self-ref.md'))
+    -- File should be deleted because self-references are allowed
+    assert.are.equal(0, vim.fn.filereadable('self-ref.md'))
 
-    -- Should still be editing the original file
-    assert.are.equal('self-ref.md', vim.fn.expand('%:t'))
+    -- Should have switched to a different buffer
+    assert.are_not.equal('self-ref.md', vim.fn.expand('%:t'))
   end)
 
   it('ignores non-exact matches when checking references', function()

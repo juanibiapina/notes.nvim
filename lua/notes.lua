@@ -356,37 +356,39 @@ function M.notes_delete()
     return
   end
 
-  -- Check if file exists on disk
-  local file_exists = vim.fn.filereadable(current_file) == 1
+  -- Find all references to this note
+  local references = find_references(current_name)
 
-  -- Find all references to this note (only if file exists, otherwise no point in checking)
-  local references = {}
-  if file_exists then
-    references = find_references(current_name)
+  -- Get the current filename (without path)
+  local current_filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
 
-    -- Check if there are any references
-    if #references > 0 then
-      print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #references .. ' reference(s)')
-      print('Found references in:')
-      for _, ref in ipairs(references) do
-        print('  ' .. ref.file .. ':' .. ref.line)
-      end
-      return
+  -- Filter out references that are in the current file (self-references)
+  local external_references = {}
+  for _, ref in ipairs(references) do
+    local ref_filename = vim.fs.basename(ref.file)
+
+    if ref_filename ~= current_filename then
+      table.insert(external_references, ref)
     end
   end
 
-  -- No references found, safe to delete
-  if file_exists then
-    vim.fn.delete(current_file)
+  -- Check if there are any external references
+  if #external_references > 0 then
+    print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #external_references .. ' reference(s)')
+    print('Found references in:')
+    for _, ref in ipairs(external_references) do
+      print('  ' .. ref.file .. ':' .. ref.line)
+    end
+    return
   end
 
-  -- Close the buffer (handle cases where buffer might no longer be valid)
-  local success, err = pcall(function()
-    vim.cmd('bdelete!')
-  end)
-  if not success then
-    -- If we can't close the buffer normally, just move to a different buffer
-    vim.cmd('enew')
+  -- Close the buffer
+  vim.cmd('bdelete!')
+
+  -- Delete the file if it exists
+  local file_exists = vim.fn.filereadable(current_file) == 1
+  if file_exists then
+    vim.fn.delete(current_file)
   end
 
   print('Deleted note "' .. current_name .. '"')
