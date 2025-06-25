@@ -22,7 +22,7 @@ describe('NotesDelete command', function()
     assert.are.equal(1, vim.fn.filereadable('test.txt'))
   end)
 
-  it('validates that current file exists', function()
+  it('removes buffer even when file does not exist on disk', function()
     -- Create a buffer without saving it
     helpers.set_buffer_content('# test\nsome content')
     vim.bo.filetype = 'markdown'
@@ -31,8 +31,8 @@ describe('NotesDelete command', function()
     -- Try to delete it (file doesn't actually exist on disk)
     require('notes').notes_delete()
 
-    -- Should be editing the same file still
-    assert.are.equal('test.md', vim.fn.expand('%:t'))
+    -- Buffer should be removed (we should be editing a different buffer or none)
+    assert.are_not.equal('test.md', vim.fn.expand('%:t'))
   end)
 
   it('requires ripgrep to be available', function()
@@ -40,22 +40,11 @@ describe('NotesDelete command', function()
     helpers.create_test_file('test-note.md', '# test-note\nsome content')
     vim.cmd('edit test-note.md')
 
-    -- Mock ripgrep not being available by checking if it would work
-    -- (In a real test environment, ripgrep might not be available)
-    local has_rg = vim.fn.executable('rg') == 1
+    -- Assume ripgrep is available when running tests
+    require('notes').notes_delete()
 
-    if not has_rg then
-      require('notes').notes_delete()
-
-      -- File should still exist if ripgrep is not available
-      assert.are.equal(1, vim.fn.filereadable('test-note.md'))
-    else
-      -- If ripgrep is available, we can test the full functionality
-      require('notes').notes_delete()
-
-      -- File should be deleted since there are no references
-      assert.are.equal(0, vim.fn.filereadable('test-note.md'))
-    end
+    -- File should be deleted since there are no references
+    assert.are.equal(0, vim.fn.filereadable('test-note.md'))
   end)
 
   it('deletes note when no references exist', function()

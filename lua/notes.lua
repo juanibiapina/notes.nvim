@@ -231,11 +231,11 @@ end
 
 -- Find all files that reference the given note name using ripgrep
 -- Returns a table with file references that can be used for rename or delete operations
--- Returns empty table if ripgrep is not available
+-- Throws an error if ripgrep is not available
 local function find_references(note_name)
   -- Check if ripgrep is available
   if vim.fn.executable('rg') == 0 then
-    return {}
+    error('ripgrep is required but was not found. Please install ripgrep to use this feature.')
   end
 
   -- Escape special characters for ripgrep pattern
@@ -306,13 +306,6 @@ function M.notes_rename(new_title)
   -- Find all references before renaming
   local references = find_references(current_name)
 
-  -- Check if ripgrep was available for finding references
-  if vim.fn.executable('rg') == 0 then
-    print(
-      'Warning: ripgrep is not available. References to this note will not be updated. Install ripgrep for full functionality.'
-    )
-  end
-
   -- Read current file content
   local content = vim.fn.readfile(current_file)
 
@@ -363,38 +356,38 @@ function M.notes_delete()
     return
   end
 
-  -- Check if file exists
-  if vim.fn.filereadable(current_file) == 0 then
-    print('Error: Current file does not exist')
-    return
-  end
+  -- Check if file exists on disk
+  local file_exists = vim.fn.filereadable(current_file) == 1
 
-  -- Find all references to this note
-  local references = find_references(current_name)
+  -- Find all references to this note (only if file exists, otherwise no point in checking)
+  local references = {}
+  if file_exists then
+    references = find_references(current_name)
 
-  -- Check if ripgrep was available
-  if vim.fn.executable('rg') == 0 then
-    print(
-      'Error: ripgrep is required for the NotesDelete command but was not found. Please install ripgrep to use this feature.'
-    )
-    return
-  end
-
-  -- Check if there are any references
-  if #references > 0 then
-    print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #references .. ' reference(s)')
-    print('Found references in:')
-    for _, ref in ipairs(references) do
-      print('  ' .. ref.file .. ':' .. ref.line)
+    -- Check if there are any references
+    if #references > 0 then
+      print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #references .. ' reference(s)')
+      print('Found references in:')
+      for _, ref in ipairs(references) do
+        print('  ' .. ref.file .. ':' .. ref.line)
+      end
+      return
     end
-    return
   end
 
   -- No references found, safe to delete
-  vim.fn.delete(current_file)
+  if file_exists then
+    vim.fn.delete(current_file)
+  end
 
-  -- Close the buffer
-  vim.cmd('bdelete')
+  -- Close the buffer (handle cases where buffer might no longer be valid)
+  local success, err = pcall(function()
+    vim.cmd('bdelete!')
+  end)
+  if not success then
+    -- If we can't close the buffer normally, just move to a different buffer
+    vim.cmd('enew')
+  end
 
   print('Deleted note "' .. current_name .. '"')
 end
