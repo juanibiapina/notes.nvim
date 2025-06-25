@@ -229,4 +229,120 @@ function M.magic()
   -- Do nothing (no applicable context found)
 end
 
+-- Find all files that reference the given note name using ripgrep
+-- Returns a table with file references that can be used for rename or delete operations
+local function find_references(note_name)
+  -- Check if ripgrep is available
+  local rg_available = vim.fn.executable('rg') == 1
+  if not rg_available then
+    print('Warning: ripgrep not found. References will not be updated.')
+    return {}
+  end
+
+  -- Escape special characters for ripgrep pattern
+  local escaped_name = note_name:gsub('([%[%]%(%)%.%*%+%-%?%^%$])', '\\%1')
+  local pattern = '\\[\\[' .. escaped_name .. '\\]\\]'
+
+  -- Use ripgrep to find all references
+  local cmd = 'rg --json "' .. pattern .. '" .'
+  local handle = io.popen(cmd)
+  if not handle then
+    return {}
+  end
+
+  local references = {}
+  for line in handle:lines() do
+    local ok, json_data = pcall(vim.fn.json_decode, line)
+    if ok and json_data.type == 'match' then
+      local file_path = json_data.data.path.text
+      local line_number = json_data.data.line_number
+      local line_text = json_data.data.lines.text
+
+      table.insert(references, {
+        file = file_path,
+        line = line_number,
+        text = line_text,
+      })
+    end
+  end
+  handle:close()
+
+  return references
+end
+
+-- Rename the current note file, header and all references
+function M.notes_rename(new_title)
+  if not new_title or new_title == '' then
+    print('Error: New title is required')
+    return
+  end
+
+  -- Get current file info
+  local current_file = vim.fn.expand('%:p')
+  local current_name = vim.fn.expand('%:t:r') -- filename without extension
+
+  -- Validate we're in a markdown file
+  if not current_file:match('%.md$') then
+    print('Error: Current file is not a markdown file')
+    return
+  end
+
+  -- Check if file exists
+  if vim.fn.filereadable(current_file) == 0 then
+    print('Error: Current file does not exist')
+    return
+  end
+
+  -- Prepare new filename
+  local new_filename = new_title:match('%.md$') and new_title or (new_title .. '.md')
+  local current_dir = vim.fn.expand('%:p:h')
+  local new_file_path = current_dir .. '/' .. new_filename
+
+  -- Check if target file already exists
+  if vim.fn.filereadable(new_file_path) == 1 then
+    print('Error: Target file already exists: ' .. new_filename)
+    return
+  end
+
+  -- Find all references before renaming
+  local references = find_references(current_name)
+
+  -- Read current file content
+  local content = vim.fn.readfile(current_file)
+
+  -- Update header if it matches the current filename
+  if #content > 0 and content[1] == '# ' .. current_name then
+    content[1] = '# ' .. new_title:gsub('%.md$', '')
+  end
+
+  -- Write content to new file
+  vim.fn.writefile(content, new_file_path)
+
+  -- Delete old file
+  vim.fn.delete(current_file)
+
+  -- Update all references
+  for _, ref in ipairs(references) do
+    local file_content = vim.fn.readfile(ref.file)
+    for i, line in ipairs(file_content) do
+      if i == ref.line then
+        -- Replace the reference in this line
+        local old_ref = '[[' .. current_name .. ']]'
+        local new_ref = '[[' .. new_title:gsub('%.md$', '') .. ']]'
+        file_content[i] = line:gsub(vim.pesc(old_ref), new_ref)
+        break
+      end
+    end
+    vim.fn.writefile(file_content, ref.file)
+  end
+
+  -- Open the new file
+  vim.cmd('edit ' .. new_file_path)
+
+  print('Renamed note from "' .. current_name .. '" to "' .. new_title:gsub('%.md$', '') .. '"')
+  if #references > 0 then
+    print('Updated ' .. #references .. ' reference(s)')
+  end
+end
+
 return M

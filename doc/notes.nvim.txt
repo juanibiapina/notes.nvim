@@ -79,6 +79,20 @@ COMMANDS						*notes-commands*
 	This command works well when assigned to a hotkey like "Enter" for
 	context-aware note navigation and task management.
 
+:NotesRename {new_title}				*:NotesRename*
+	Rename the current note file, header and all references:
+	- Renames the current markdown file to the new title
+	- Updates the header if it matches the old filename
+	- Finds and updates all Obsidian-style references `[[old_name]]` to `[[new_title]]`
+	- Requires ripgrep to be installed for reference updating
+	- Automatically appends `.md` extension if not provided
+	- Prevents overwriting existing files
+	
+	Examples: >
+		:NotesRename "My New Title"    " Renames current note to "My New Title.md"
+		:NotesRename new-note.md       " Renames to "new-note.md"
+<
+
 LUA FUNCTIONS						*notes-functions*
 
 All commands are also available as Lua functions for programmatic access:
@@ -103,6 +117,9 @@ require('notes').task_toggle()				*notes.task_toggle()*
 
 require('notes').magic()				*notes.magic()*
 	Lua equivalent of `:NotesMagic` command.
+
+require('notes').notes_rename({new_title})		*notes.notes_rename()*
+	Lua equivalent of `:NotesRename` command.
 
 MAPPINGS						*notes-mappings*
 
