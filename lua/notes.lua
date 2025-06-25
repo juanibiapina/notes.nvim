@@ -231,14 +231,8 @@ end
 
 -- Find all files that reference the given note name using ripgrep
 -- Returns a table with file references that can be used for rename or delete operations
+-- Note: This function assumes ripgrep is available (should be checked by caller)
 local function find_references(note_name)
-  -- Check if ripgrep is available
-  local rg_available = vim.fn.executable('rg') == 1
-  if not rg_available then
-    print('Warning: ripgrep not found. References will not be updated.')
-    return {}
-  end
-
   -- Escape special characters for ripgrep pattern
   local escaped_name = note_name:gsub('([%[%]%(%)%.%*%+%-%?%^%$])', '\\%1')
   local pattern = '\\[\\[' .. escaped_name .. '\\]\\]'
@@ -274,6 +268,14 @@ end
 function M.notes_rename(new_title)
   if not new_title or new_title == '' then
     print('Error: New title is required')
+    return
+  end
+
+  -- Check if ripgrep is available - required for safe renaming
+  if vim.fn.executable('rg') == 0 then
+    print(
+      'Error: ripgrep is required for the NotesRename command but was not found. Please install ripgrep to use this feature.'
+    )
     return
   end
 
