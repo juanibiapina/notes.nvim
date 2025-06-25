@@ -231,8 +231,13 @@ end
 
 -- Find all files that reference the given note name using ripgrep
 -- Returns a table with file references that can be used for rename or delete operations
--- Note: This function assumes ripgrep is available (should be checked by caller)
+-- Returns empty table if ripgrep is not available
 local function find_references(note_name)
+  -- Check if ripgrep is available
+  if vim.fn.executable('rg') == 0 then
+    return {}
+  end
+
   -- Escape special characters for ripgrep pattern
   local escaped_name = note_name:gsub('([%[%]%(%)%.%*%+%-%?%^%$])', '\\%1')
   local pattern = '\\[\\[' .. escaped_name .. '\\]\\]'
@@ -271,14 +276,6 @@ function M.notes_rename(new_title)
     return
   end
 
-  -- Check if ripgrep is available - required for safe renaming
-  if vim.fn.executable('rg') == 0 then
-    print(
-      'Error: ripgrep is required for the NotesRename command but was not found. Please install ripgrep to use this feature.'
-    )
-    return
-  end
-
   -- Get current file info
   local current_file = vim.fn.expand('%:p')
   local current_name = vim.fn.expand('%:t:r') -- filename without extension
@@ -308,6 +305,13 @@ function M.notes_rename(new_title)
 
   -- Find all references before renaming
   local references = find_references(current_name)
+
+  -- Check if ripgrep was available for finding references
+  if vim.fn.executable('rg') == 0 then
+    print(
+      'Warning: ripgrep is not available. References to this note will not be updated. Install ripgrep for full functionality.'
+    )
+  end
 
   -- Read current file content
   local content = vim.fn.readfile(current_file)
@@ -345,6 +349,54 @@ function M.notes_rename(new_title)
   if #references > 0 then
     print('Updated ' .. #references .. ' reference(s)')
   end
+end
+
+-- Delete the current note if no references to it exist
+function M.notes_delete()
+  -- Get current file info
+  local current_file = vim.fn.expand('%:p')
+  local current_name = vim.fn.expand('%:t:r') -- filename without extension
+
+  -- Validate we're in a markdown file
+  if not current_file:match('%.md$') then
+    print('Error: Current file is not a markdown file')
+    return
+  end
+
+  -- Check if file exists
+  if vim.fn.filereadable(current_file) == 0 then
+    print('Error: Current file does not exist')
+    return
+  end
+
+  -- Find all references to this note
+  local references = find_references(current_name)
+
+  -- Check if ripgrep was available
+  if vim.fn.executable('rg') == 0 then
+    print(
+      'Error: ripgrep is required for the NotesDelete command but was not found. Please install ripgrep to use this feature.'
+    )
+    return
+  end
+
+  -- Check if there are any references
+  if #references > 0 then
+    print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #references .. ' reference(s)')
+    print('Found references in:')
+    for _, ref in ipairs(references) do
+      print('  ' .. ref.file .. ':' .. ref.line)
+    end
+    return
+  end
+
+  -- No references found, safe to delete
+  vim.fn.delete(current_file)
+
+  -- Close the buffer
+  vim.cmd('bdelete')
+
+  print('Deleted note "' .. current_name .. '"')
 end
 
 return M

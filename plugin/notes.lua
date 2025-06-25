@@ -34,6 +34,10 @@ vim.api.nvim_create_user_command('NotesRename', function(opts)
   notes.notes_rename(opts.args)
 end, { nargs = 1, desc = 'Rename current note file, header and all references' })
 
+vim.api.nvim_create_user_command('NotesDelete', function()
+  notes.notes_delete()
+end, { desc = 'Delete current note if no references to it exist' })
+
 -- For backward compatibility, keep the <Plug> mappings that call the commands
 vim.api.nvim_set_keymap('n', '<Plug>NotesOpenCurrent', ':NotesOpenCurrent<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Plug>NotesCompleteItem', ':NotesCompleteItem<CR>', { noremap = true, silent = true })
