@@ -33,3 +33,6 @@ jobs:
 
       - name: Install stylua
         run: cargo install stylua
+
+      - name: Install ripgrep
+        run: sudo apt install -y ripgrep

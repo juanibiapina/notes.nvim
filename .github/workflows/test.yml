@@ -28,6 +28,9 @@ jobs:
         sudo apt install -y luarocks
         sudo luarocks install luacheck
 
+    - name: Install ripgrep
+      run: sudo apt install -y ripgrep
+
     - name: Run luacheck
       run: luacheck .
 

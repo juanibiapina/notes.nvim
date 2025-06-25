@@ -73,4 +73,10 @@ function M.load_plugin()
   vim.cmd('luafile ' .. plugin_path)
 end
 
+-- Helper function to create a test file with content
+function M.create_test_file(filename, content)
+  local lines = vim.split(content, '\n')
+  vim.fn.writefile(lines, filename)
+end
+
 return M

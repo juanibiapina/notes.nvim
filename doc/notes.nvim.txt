@@ -9,9 +9,21 @@ This plugin provides functionality for note-taking in Neovim with support for:
 - Opening links in Obsidian-style double brackets format `[[filename]]`
 - Moving completed items to daily files (compatible with Obsidian daily notes)
 - Creating and managing tasks with checkboxes
+- Renaming notes and updating all references throughout the project
 
 The plugin is written in Lua and exposes both commands and Lua functions for
 programmatic access.
+
+REQUIREMENTS						*notes-requirements*
+
+ripgrep							*notes-ripgrep*
+	Used for finding references to notes.
+	
+	Install ripgrep using your system package manager:
+	- Ubuntu/Debian: `apt install ripgrep`
+	- macOS with Homebrew: `brew install ripgrep`
+	- Arch Linux: `pacman -S ripgrep`
+	- Check https://github.com/BurntSushi/ripgrep for more installation options.
 
 CONFIGURATION						*notes-configuration*
 
@@ -79,6 +91,20 @@ COMMANDS						*notes-commands*
 	This command works well when assigned to a hotkey like "Enter" for
 	context-aware note navigation and task management.
 
+:NotesRename {new_title}				*:NotesRename*
+	Rename the current note file, header and all references:
+	- Renames the current note to the new title
+	- Updates the header if it matches the old title
+	- Finds and updates all Obsidian-style references `[[old_title]]` to `[[new_title]]`
+	- Requires ripgrep
+	- Prevents overwriting existing files
+  - `.md` extension must not be included in the new title
+	
+	Examples: >
+		:NotesRename "My New Title"    " Renames current note to "My New Title.md"
+		:NotesRename new-note       " Renames to "new-note.md"
+<
+
 LUA FUNCTIONS						*notes-functions*
 
 All commands are also available as Lua functions for programmatic access:
@@ -103,6 +129,9 @@ require('notes').task_toggle()				*notes.task_toggle()*
 
 require('notes').magic()				*notes.magic()*
 	Lua equivalent of `:NotesMagic` command.
+
+require('notes').notes_rename({new_title})		*notes.notes_rename()*
+	Lua equivalent of `:NotesRename` command.
 
 MAPPINGS						*notes-mappings*
 
