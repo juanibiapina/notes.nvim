@@ -231,8 +231,13 @@ end
 
 -- Find all files that reference the given note name using ripgrep
 -- Returns a table with file references that can be used for rename or delete operations
--- Note: This function assumes ripgrep is available (should be checked by caller)
+-- Throws an error if ripgrep is not available
 local function find_references(note_name)
+  -- Check if ripgrep is available
+  if vim.fn.executable('rg') == 0 then
+    error('ripgrep is required but was not found. Please install ripgrep to use this feature.')
+  end
+
   -- Escape special characters for ripgrep pattern
   local escaped_name = note_name:gsub('([%[%]%(%)%.%*%+%-%?%^%$])', '\\%1')
   local pattern = '\\[\\[' .. escaped_name .. '\\]\\]'
@@ -268,14 +273,6 @@ end
 function M.notes_rename(new_title)
   if not new_title or new_title == '' then
     print('Error: New title is required')
-    return
-  end
-
-  -- Check if ripgrep is available - required for safe renaming
-  if vim.fn.executable('rg') == 0 then
-    print(
-      'Error: ripgrep is required for the NotesRename command but was not found. Please install ripgrep to use this feature.'
-    )
     return
   end
 
@@ -345,6 +342,56 @@ function M.notes_rename(new_title)
   if #references > 0 then
     print('Updated ' .. #references .. ' reference(s)')
   end
+end
+
+-- Delete the current note if no references to it exist
+function M.notes_delete()
+  -- Get current file info
+  local current_file = vim.fn.expand('%:p')
+  local current_name = vim.fn.expand('%:t:r') -- filename without extension
+
+  -- Validate we're in a markdown file
+  if not current_file:match('%.md$') then
+    print('Error: Current file is not a markdown file')
+    return
+  end
+
+  -- Find all references to this note
+  local references = find_references(current_name)
+
+  -- Get the current filename (without path)
+  local current_filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
+
+  -- Filter out references that are in the current file (self-references)
+  local external_references = {}
+  for _, ref in ipairs(references) do
+    local ref_filename = vim.fs.basename(ref.file)
+
+    if ref_filename ~= current_filename then
+      table.insert(external_references, ref)
+    end
+  end
+
+  -- Check if there are any external references
+  if #external_references > 0 then
+    print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #external_references .. ' reference(s)')
+    print('Found references in:')
+    for _, ref in ipairs(external_references) do
+      print('  ' .. ref.file .. ':' .. ref.line)
+    end
+    return
+  end
+
+  -- Close the buffer
+  vim.cmd('bdelete!')
+
+  -- Delete the file if it exists
+  local file_exists = vim.fn.filereadable(current_file) == 1
+  if file_exists then
+    vim.fn.delete(current_file)
+  end
+
+  print('Deleted note "' .. current_name .. '"')
 end
 
 return M
