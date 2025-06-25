@@ -190,8 +190,13 @@ local function handle_obsidian_link()
     start = match_end + 1
   end
 
-  -- Check if cursor is on an obsidian link
-  if #matches > 0 then
+  -- Check if there are any obsidian links on the line
+  if #matches == 1 then
+    -- If there's only one link, follow it regardless of cursor position
+    M.notes_open(matches[1].inner_text)
+    return true
+  elseif #matches > 1 then
+    -- If there are multiple links, find which one the cursor is on
     for _, match in ipairs(matches) do
       if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
         -- Cursor is on this link, open it
