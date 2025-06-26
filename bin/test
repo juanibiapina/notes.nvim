@@ -3,12 +3,18 @@
 # Test runner script for plenary tests
 set -e
 
-echo "Setting up plenary test environment..."
+echo "Setting up test environment..."
 
 # Download plenary if not present
 if [ ! -d "vendor/plenary.nvim" ]; then
     echo "Downloading plenary.nvim..."
     git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git vendor/plenary.nvim
+fi
+
+# Download telescope if not present (needed for telescope extension tests)
+if [ ! -d "vendor/telescope.nvim" ]; then
+    echo "Downloading telescope.nvim..."
+    git clone --depth 1 https://github.com/nvim-telescope/telescope.nvim.git vendor/telescope.nvim
 fi
 
 echo "Running plenary tests..."

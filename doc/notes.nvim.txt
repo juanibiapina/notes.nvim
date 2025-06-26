@@ -179,6 +179,32 @@ The plugin does not set any default mappings. You can create your own: >
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
 <
 
+TELESCOPE INTEGRATION				*notes-telescope*
+
+The plugin provides a Telescope extension for enhanced note navigation when
+Telescope is available. To use it, load the extension: >
+
+	require("telescope").load_extension("notes")
+<
+
+This provides two pickers:
+
+:Telescope notes list_notes			*:Telescope-notes-list_notes*
+	Opens a Telescope picker to browse all notes by title. Selecting a note
+	opens it using the `notes_open()` function.
+
+:Telescope notes find_references		*:Telescope-notes-find_references*
+	Opens a Telescope picker showing all references to the current note.
+	Uses the same `find_references()` function that powers the rename and
+	delete commands. Selecting a reference opens the file and jumps to the
+	line containing the reference.
+
+Example mappings for Telescope integration: >
+
+	nnoremap <leader>fn <cmd>Telescope notes list_notes<CR>
+	nnoremap <leader>fr <cmd>Telescope notes find_references<CR>
+<
+
 For backward compatibility, <Plug> mappings are still available: >
 	" Legacy <Plug> mappings (still supported)
 	nmap <leader>no <Plug>NotesOpenCurrent

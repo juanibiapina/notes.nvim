@@ -70,6 +70,19 @@ vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open tod
 
 **Deleting notes**: Use `:NotesDelete` to safely delete the current note. The command only deletes if no other notes reference it, preventing broken links (requires ripgrep).
 
+### Telescope Integration
+
+If you have [Telescope](https://github.com/nvim-telescope/telescope.nvim) installed, you can use the telescope extension for enhanced note navigation:
+
+```lua
+require("telescope").load_extension("notes")
+```
+
+This provides two pickers:
+
+- `:Telescope notes list_notes` - Browse all notes by title
+- `:Telescope notes find_references` - Find all references to the current note
+
 ## 📚 Documentation
 
 Full documentation can be found in `doc/notes.nvim.txt` or by running `:h notes.nvim.txt` inside neovim.
