@@ -143,6 +143,23 @@ require('notes').notes_rename({new_title})		*notes.notes_rename()*
 require('notes').notes_delete()				*notes.notes_delete()*
 	Lua equivalent of `:NotesDelete` command.
 
+require('notes').find_references({note_name})		*notes.find_references()*
+	Find all files that reference the given note name using ripgrep.
+	Returns a table with file references containing:
+	  - file: string - the file path containing the reference
+	  - line: number - the line number where the reference was found  
+	  - text: string - the full text of the line containing the reference
+	
+	Requires ripgrep to be installed and available in PATH.
+	Throws an error if ripgrep is not available.
+	
+	Example: >
+		local refs = require('notes').find_references('my-note')
+		for _, ref in ipairs(refs) do
+		  print(ref.file .. ':' .. ref.line .. ' - ' .. ref.text)
+		end
+<
+
 MAPPINGS						*notes-mappings*
 
 The plugin does not set any default mappings. You can create your own: >
