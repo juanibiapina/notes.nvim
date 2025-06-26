@@ -168,8 +168,8 @@ function M.task_toggle()
   -- Do nothing if the line doesn't match task patterns
 end
 
--- Returns true if an obsidian link was found and handled, false otherwise
-local function handle_obsidian_link()
+-- Returns true if cursor is on an obsidian link and it was handled, false otherwise
+local function handle_obsidian_link_under_cursor()
   local line = vim.fn.getline('.')
   local cursor_col = vim.fn.col('.')
   local pattern = '%[%[(.-)%]%]'
@@ -190,20 +190,49 @@ local function handle_obsidian_link()
     start = match_end + 1
   end
 
-  -- Check if there are any obsidian links on the line
+  -- Check if cursor is on any obsidian link
+  for _, match in ipairs(matches) do
+    if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
+      -- Cursor is on this link, open it
+      M.notes_open(match.inner_text)
+      return true
+    end
+  end
+
+  return false
+end
+
+-- Returns true if there's exactly one obsidian link on a non-task line and it was handled, false otherwise
+local function handle_single_obsidian_link_on_non_task()
+  local line = vim.fn.getline('.')
+
+  -- Don't handle single links on task lines
+  if is_task_line(line) then
+    return false
+  end
+
+  local pattern = '%[%[(.-)%]%]'
+  local matches = {}
+
+  -- Find all obsidian style links on the line
+  local start = 1
+  while true do
+    local match_start, match_end, match_text = line:find(pattern, start)
+    if not match_start then
+      break
+    end
+    table.insert(matches, {
+      text = '[[' .. match_text .. ']]',
+      pos = match_start,
+      inner_text = match_text,
+    })
+    start = match_end + 1
+  end
+
+  -- If there's exactly one link on a non-task line, follow it
   if #matches == 1 then
-    -- If there's only one link, follow it regardless of cursor position
     M.notes_open(matches[1].inner_text)
     return true
-  elseif #matches > 1 then
-    -- If there are multiple links, find which one the cursor is on
-    for _, match in ipairs(matches) do
-      if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
-        -- Cursor is on this link, open it
-        M.notes_open(match.inner_text)
-        return true
-      end
-    end
   end
 
   return false
@@ -223,11 +252,15 @@ end
 
 -- Magic command that combines multiple behaviors based on context
 function M.magic()
-  if handle_obsidian_link() then
+  if handle_obsidian_link_under_cursor() then
     return
   end
 
   if handle_task_toggle() then
+    return
+  end
+
+  if handle_single_obsidian_link_on_non_task() then
     return
   end
 

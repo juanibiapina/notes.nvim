@@ -73,11 +73,10 @@ COMMANDS						*notes-commands*
 
 :NotesMagic						*:NotesMagic*
 	Smart command that behaves contextually based on cursor position:
-	1. If there's exactly one Obsidian-style link `[[filename]]` on the line,
+	1. If cursor is on an Obsidian-style link `[[filename]]`, follows the link
+	2. Otherwise, if current line is a task, toggles the task completion
+	3. Otherwise, if there's exactly one Obsidian-style link on a non-task line,
 	   follows the link regardless of cursor position
-	2. If there are multiple links on the line and cursor is on a link,
-	   follows that specific link
-	3. Otherwise, if current line is a task, toggles the task completion
 	4. Otherwise, does nothing
 	
 	This command works well when assigned to a hotkey like "Enter" for
@@ -190,9 +189,9 @@ Managing tasks:
 
 Smart context-aware command:
 	Use `:NotesMagic` for context-aware behavior:
-	- On a line with exactly one `[[link]]`: follows the link (regardless of cursor position)
-	- On a line with multiple links, when cursor is on a link: follows that link
-	- On `- [ ] task` line (when no single link to follow): toggles task completion
+	- When cursor is on `[[link]]`: follows that link
+	- On `- [ ] task` line (when not on a link): toggles task completion
+	- On non-task line with exactly one `[[link]]`: follows the link (regardless of cursor position)
 	- Otherwise: does nothing
 	
 	Perfect for mapping to Enter key for intuitive navigation
@@ -200,7 +199,7 @@ Smart context-aware command:
 Multiple links on one line:
 	If a line contains `[[link1]] and [[link2]]`, the plugin will open
 	the link where your cursor is positioned. If only one link exists
-	on the line, it will be followed regardless of cursor position.
+	on a non-task line, it will be followed regardless of cursor position.
 
 ABOUT							*notes-about*
 

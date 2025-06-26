@@ -64,10 +64,10 @@ describe('NotesMagic command', function()
       assert.are.equal('Task Link.md', filename)
     end)
 
-    it('follows single link when cursor is not on link', function()
+    it('follows single link when cursor is not on link and not on task line', function()
       -- Given
-      helpers.set_buffer_content('- This is [[The Target]] some text')
-      vim.cmd('normal! gg') -- Position cursor at beginning (not on link)
+      helpers.set_buffer_content('This is [[The Target]] some text')
+      vim.cmd('normal! gg') -- Position cursor at beginning (not on link, not on task)
 
       -- When
       vim.cmd('NotesMagic')
@@ -77,9 +77,9 @@ describe('NotesMagic command', function()
       assert.are.equal('The Target.md', filename)
     end)
 
-    it('follows single link when cursor is at end of line', function()
+    it('follows single link when cursor is at end of line and not on task line', function()
       -- Given
-      helpers.set_buffer_content('- This is [[The Target]] some text')
+      helpers.set_buffer_content('This is [[The Target]] some text')
       vim.cmd('normal! gg$') -- Position cursor at end of line
 
       -- When
@@ -90,7 +90,7 @@ describe('NotesMagic command', function()
       assert.are.equal('The Target.md', filename)
     end)
 
-    it('follows single link in task when cursor is not on link', function()
+    it('toggles task when single link exists but cursor is not on link', function()
       -- Given
       helpers.set_buffer_content('- [ ] Check out [[Task Link]] for details')
       vim.cmd('normal! gg') -- Position cursor at beginning (not on link)
@@ -98,9 +98,11 @@ describe('NotesMagic command', function()
       -- When
       vim.cmd('NotesMagic')
 
-      -- Then - should follow link instead of toggling task
+      -- Then - should toggle task instead of following link (task has priority over single link)
+      local line = vim.fn.getline(1)
+      assert.are.equal('- [x] Check out [[Task Link]] for details', line)
       local filename = vim.fn.expand('%:t')
-      assert.are.equal('Task Link.md', filename)
+      assert.are.equal('', filename) -- should not open a file
     end)
   end)
 
