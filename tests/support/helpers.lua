@@ -30,6 +30,33 @@ function M.get_plugin_root()
   return original_cwd
 end
 
+-- Helper function to setup telescope for tests if available
+function M.setup_telescope()
+  -- Add telescope to runtime path similar to how plugin is loaded
+  local plugin_root = M.get_plugin_root()
+  local telescope_path = plugin_root .. '/vendor/telescope.nvim'
+  vim.opt.rtp:prepend(telescope_path)
+
+  -- Require telescope, will error if not available
+  local telescope = require('telescope')
+
+  -- Setup telescope with minimal config
+  telescope.setup({
+    defaults = {
+      -- Disable all default mappings to avoid conflicts in tests
+      mappings = {
+        i = {},
+        n = {},
+      },
+    },
+  })
+
+  -- Load the notes extension, will error if it fails
+  telescope.load_extension('notes')
+
+  return telescope
+end
+
 -- Helper function to teardown test environment
 function M.teardown_test_env()
   -- Wipe all listed buffers to prevent state leakage between tests
