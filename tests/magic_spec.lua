@@ -36,17 +36,17 @@ describe('NotesMagic command', function()
       assert.are.equal('Second Link.md', filename)
     end)
 
-    it('does not follow link when cursor is not on link', function()
+    it('does not follow link when cursor is not on link and multiple links exist', function()
       -- Given
-      helpers.set_buffer_content('- [ ] This is [[The Target]] some text')
-      vim.cmd('normal! gg') -- Position cursor at beginning (on task)
+      helpers.set_buffer_content('- [ ] This is [[The Target]] and [[Another Link]] some text')
+      vim.cmd('normal! gg') -- Position cursor at beginning (on task, not on any link)
 
       -- When
       vim.cmd('NotesMagic')
 
-      -- Then - should toggle task instead of following link
+      -- Then - should toggle task instead of following link since multiple links exist
       local line = vim.fn.getline(1)
-      assert.are.equal('- [x] This is [[The Target]] some text', line)
+      assert.are.equal('- [x] This is [[The Target]] and [[Another Link]] some text', line)
       local filename = vim.fn.expand('%:t')
       assert.are.equal('', filename) -- should not open a file
     end)
@@ -62,6 +62,47 @@ describe('NotesMagic command', function()
       -- Then - should follow link instead of toggling task
       local filename = vim.fn.expand('%:t')
       assert.are.equal('Task Link.md', filename)
+    end)
+
+    it('follows single link when cursor is not on link and not on task line', function()
+      -- Given
+      helpers.set_buffer_content('This is [[The Target]] some text')
+      vim.cmd('normal! gg') -- Position cursor at beginning (not on link, not on task)
+
+      -- When
+      vim.cmd('NotesMagic')
+
+      -- Then - should follow the single link
+      local filename = vim.fn.expand('%:t')
+      assert.are.equal('The Target.md', filename)
+    end)
+
+    it('follows single link when cursor is at end of line and not on task line', function()
+      -- Given
+      helpers.set_buffer_content('This is [[The Target]] some text')
+      vim.cmd('normal! gg$') -- Position cursor at end of line
+
+      -- When
+      vim.cmd('NotesMagic')
+
+      -- Then - should follow the single link
+      local filename = vim.fn.expand('%:t')
+      assert.are.equal('The Target.md', filename)
+    end)
+
+    it('toggles task when single link exists but cursor is not on link', function()
+      -- Given
+      helpers.set_buffer_content('- [ ] Check out [[Task Link]] for details')
+      vim.cmd('normal! gg') -- Position cursor at beginning (not on link)
+
+      -- When
+      vim.cmd('NotesMagic')
+
+      -- Then - should toggle task instead of following link (task has priority over single link)
+      local line = vim.fn.getline(1)
+      assert.are.equal('- [x] Check out [[Task Link]] for details', line)
+      local filename = vim.fn.expand('%:t')
+      assert.are.equal('', filename) -- should not open a file
     end)
   end)
 
