@@ -270,7 +270,7 @@ end
 -- Find all files that reference the given note name using ripgrep
 -- Returns a table with file references that can be used for rename or delete operations
 -- Throws an error if ripgrep is not available
-local function find_references(note_name)
+function M.find_references(note_name)
   -- Check if ripgrep is available
   if vim.fn.executable('rg') == 0 then
     error('ripgrep is required but was not found. Please install ripgrep to use this feature.')
@@ -342,7 +342,7 @@ function M.notes_rename(new_title)
   end
 
   -- Find all references before renaming
-  local references = find_references(current_name)
+  local references = M.find_references(current_name)
 
   -- Read current file content
   local content = vim.fn.readfile(current_file)
@@ -395,7 +395,7 @@ function M.notes_delete()
   end
 
   -- Find all references to this note
-  local references = find_references(current_name)
+  local references = M.find_references(current_name)
 
   -- Get the current filename (without path)
   local current_filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
