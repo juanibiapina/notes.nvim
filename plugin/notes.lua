@@ -14,10 +14,6 @@ vim.api.nvim_create_user_command('NotesDailyToday', function()
   notes.daily_today()
 end, { desc = "Open today's daily file" })
 
-vim.api.nvim_create_user_command('NotesTaskNew', function()
-  notes.task_new()
-end, { desc = 'Create a new empty task on the next line' })
-
 vim.api.nvim_create_user_command('NotesTaskToggle', function()
   notes.task_toggle()
 end, { desc = 'Toggle task between done and not done' })
