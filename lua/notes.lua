@@ -106,6 +106,20 @@ function M.daily_today()
   vim.cmd('edit ' .. daily_filename)
 end
 
+-- Creates a new empty, not done task on the next line
+function M.task_new()
+  local current_line = vim.fn.line('.')
+
+  -- Insert a new line after the current line
+  vim.fn.append(current_line, '- [ ] ')
+
+  -- Move cursor to the new line at the end
+  vim.cmd('normal! j$')
+
+  -- Enter insert mode for immediate editing
+  vim.cmd('startinsert!')
+end
+
 -- Toggle a task between done and not done. Does nothing if current line isn't a task.
 function M.task_toggle()
   local line = vim.fn.getline('.')

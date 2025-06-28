@@ -51,6 +51,12 @@ COMMANDS						*notes-commands*
 	- Creates the daily directory if it doesn't exist
 	- Compatible with Obsidian daily notes format
 
+:NotesTaskNew						*:NotesTaskNew*
+	Creates a new empty task on the next line:
+	- Inserts `- [ ] ` on the line below the cursor
+	- Positions cursor at the end for immediate editing
+	- Works from any line in the buffer
+
 :NotesMagic						*:NotesMagic*
 	Smart command that behaves contextually based on cursor position:
 	1. If cursor is on an Obsidian-style link `[[filename]]`, follows the link
@@ -105,6 +111,9 @@ require('notes').open_current()				*notes.open_current()*
 require('notes').daily_today()				*notes.daily_today()*
 	Lua equivalent of `:NotesDailyToday` command.
 
+require('notes').task_new()				*notes.task_new()*
+	Lua equivalent of `:NotesTaskNew` command.
+
 require('notes').magic()				*notes.magic()*
 	Lua equivalent of `:NotesMagic` command.
 
@@ -137,10 +146,12 @@ The plugin does not set any default mappings. You can create your own: >
 
 	" Example mappings using commands
 	nmap <leader>no :NotesOpenCurrent<CR>
+	nmap <leader>nt :NotesTaskNew<CR>
 	nmap <CR> :NotesMagic<CR>
 
 	" Example mappings using Lua functions
 	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
+	nnoremap <leader>nt <cmd>lua require('notes').task_new()<CR>
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
 <
 
@@ -149,6 +160,11 @@ USAGE EXAMPLES						*notes-examples*
 Opening links:
 	Place cursor on any `[[filename]]` link and use `:NotesOpenCurrent`
 	to open `filename.md`
+
+Creating tasks:
+	Use `:NotesTaskNew` to create a new task `- [ ] ` on the next line,
+	with cursor positioned for immediate editing. The command automatically
+	enters insert mode so you can start typing the task description.
 
 Smart context-aware command:
 	Use `:NotesMagic` for context-aware behavior:

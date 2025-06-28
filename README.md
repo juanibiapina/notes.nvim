@@ -31,6 +31,7 @@ Plug 'juanibiapina/notes.nvim'
 - `:NotesOpen {filename}` - Open a note file (automatically adds .md extension)
 - `:NotesOpenCurrent` - Open link under cursor or follow `[[filename]]` links
 - `:NotesDailyToday` - Open today's daily note (format: `daily/YYYY-MM-DD.md`)
+- `:NotesTaskNew` - Create a new task `- [ ]` on the next line and enter insert mode
 - `:NotesMagic` - Smart context-aware command (follows links or toggles tasks)
 - `:NotesRename {new_title}` - Rename current note and update all references (requires ripgrep)
 - `:NotesDelete` - Delete current note if no references to it exist (requires ripgrep)
@@ -48,6 +49,8 @@ vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open tod
 ### Usage Examples
 
 **Following links**: Place cursor on any `[[filename]]` link and press your mapped key or use `:NotesOpenCurrent` to open `filename.md`.
+
+**Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax. The command automatically enters insert mode at the end of the line.
 
 **Smart magic command**: `:NotesMagic` provides context-aware behavior:
 - On `[[link]]`: follows the link
