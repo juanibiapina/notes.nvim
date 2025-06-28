@@ -167,11 +167,6 @@ The plugin does not set any default mappings. You can create your own: >
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
 <
 
-For backward compatibility, <Plug> mappings are still available: >
-	" Legacy <Plug> mappings (still supported)
-	nmap <leader>no <Plug>NotesOpenCurrent
-<
-
 USAGE EXAMPLES						*notes-examples*
 
 Opening links:

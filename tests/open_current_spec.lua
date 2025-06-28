@@ -1,20 +1,8 @@
 local helpers = require('tests.support.helpers')
 
 describe('opening links with NotesOpenCurrent', function()
-  local open_current_cmd
-
   before_each(function()
     helpers.setup_test_env()
-
-    -- Get the mapping command for backward compatibility testing
-    local mappings = vim.api.nvim_get_keymap('n')
-    for _, mapping in ipairs(mappings) do
-      if mapping.lhs == '<Plug>NotesOpenCurrent' then
-        open_current_cmd = mapping.rhs:gsub('<CR>$', '')
-        break
-      end
-    end
-    assert(open_current_cmd, 'NotesOpenCurrent mapping not found')
   end)
 
   after_each(function()
@@ -55,7 +43,7 @@ describe('opening links with NotesOpenCurrent', function()
     vim.cmd('normal! gg')
 
     -- when
-    vim.cmd(open_current_cmd)
+    vim.cmd('NotesOpenCurrent')
 
     -- then
     local filename = vim.fn.expand('%:t')
@@ -68,7 +56,7 @@ describe('opening links with NotesOpenCurrent', function()
     vim.cmd('normal! gg')
 
     -- when
-    vim.cmd(open_current_cmd)
+    vim.cmd('NotesOpenCurrent')
 
     -- then
     local filename = vim.fn.expand('%:t')
@@ -81,7 +69,7 @@ describe('opening links with NotesOpenCurrent', function()
     vim.cmd('normal! gglllllll')
 
     -- when
-    vim.cmd(open_current_cmd)
+    vim.cmd('NotesOpenCurrent')
 
     -- then
     local filename = vim.fn.expand('%:t')
@@ -94,7 +82,7 @@ describe('opening links with NotesOpenCurrent', function()
     vim.cmd('normal! ggllllllllllllllllllllllll')
 
     -- when
-    vim.cmd(open_current_cmd)
+    vim.cmd('NotesOpenCurrent')
 
     -- then
     local filename = vim.fn.expand('%:t')
@@ -107,7 +95,7 @@ describe('opening links with NotesOpenCurrent', function()
     vim.cmd('normal! gg')
 
     -- when
-    vim.cmd(open_current_cmd)
+    vim.cmd('NotesOpenCurrent')
 
     -- then
     local filename = vim.fn.expand('%:t')
