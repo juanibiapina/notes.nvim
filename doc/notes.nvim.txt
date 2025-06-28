@@ -51,13 +51,6 @@ COMMANDS						*notes-commands*
 	- Creates the daily directory if it doesn't exist
 	- Compatible with Obsidian daily notes format
 
-:NotesTaskToggle					*:NotesTaskToggle*
-	Toggles task completion status:
-	- Changes `- [ ]` to `- [x]` (marks task as done)
-	- Changes `- [x]` to `- [ ]` (marks task as not done)
-	- Works with indented tasks
-	- Does nothing if current line is not a task
-
 :NotesMagic						*:NotesMagic*
 	Smart command that behaves contextually based on cursor position:
 	1. If cursor is on an Obsidian-style link `[[filename]]`, follows the link
@@ -112,9 +105,6 @@ require('notes').open_current()				*notes.open_current()*
 require('notes').daily_today()				*notes.daily_today()*
 	Lua equivalent of `:NotesDailyToday` command.
 
-require('notes').task_toggle()				*notes.task_toggle()*
-	Lua equivalent of `:NotesTaskToggle` command.
-
 require('notes').magic()				*notes.magic()*
 	Lua equivalent of `:NotesMagic` command.
 
@@ -147,12 +137,10 @@ The plugin does not set any default mappings. You can create your own: >
 
 	" Example mappings using commands
 	nmap <leader>no :NotesOpenCurrent<CR>
-	nmap <leader>ng :NotesTaskToggle<CR>
 	nmap <CR> :NotesMagic<CR>
 
 	" Example mappings using Lua functions
 	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
-	nnoremap <leader>ng <cmd>lua require('notes').task_toggle()<CR>
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
 <
 
@@ -161,10 +149,6 @@ USAGE EXAMPLES						*notes-examples*
 Opening links:
 	Place cursor on any `[[filename]]` link and use `:NotesOpenCurrent`
 	to open `filename.md`
-
-Managing tasks:
-	Place cursor on a task line and use `:NotesTaskToggle` to toggle
-	between `- [ ]` (not done) and `- [x]` (done)
 
 Smart context-aware command:
 	Use `:NotesMagic` for context-aware behavior:

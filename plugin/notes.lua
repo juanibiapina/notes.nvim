@@ -14,10 +14,6 @@ vim.api.nvim_create_user_command('NotesDailyToday', function()
   notes.daily_today()
 end, { desc = "Open today's daily file" })
 
-vim.api.nvim_create_user_command('NotesTaskToggle', function()
-  notes.task_toggle()
-end, { desc = 'Toggle task between done and not done' })
-
 vim.api.nvim_create_user_command('NotesMagic', function()
   notes.magic()
 end, { desc = 'Smart command: follow link, toggle task, or open list item' })
