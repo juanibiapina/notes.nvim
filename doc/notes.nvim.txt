@@ -44,13 +44,6 @@ COMMANDS						*notes-commands*
 	- Automatically appends `.md` extension to filenames
 	- Does nothing if no Obsidian links are found
 
-:NotesCompleteItem					*:NotesCompleteItem*
-	Moves the current line to a daily file:
-	- Creates file in format `daily/YYYY-MM-DD.md` (or custom directory)
-	- Appends current line to the daily file
-	- Removes current line from original file
-	- Compatible with Obsidian daily notes format
-
 :NotesDailyToday					*:NotesDailyToday*
 	Opens today's daily file:
 	- Opens file in format `daily/YYYY-MM-DD.md`
@@ -122,9 +115,6 @@ require('notes').notes_open({filename})			*notes.notes_open()*
 require('notes').open_current()				*notes.open_current()*
 	Lua equivalent of `:NotesOpenCurrent` command.
 
-require('notes').complete_item()			*notes.complete_item()*
-	Lua equivalent of `:NotesCompleteItem` command.
-
 require('notes').daily_today()				*notes.daily_today()*
 	Lua equivalent of `:NotesDailyToday` command.
 
@@ -166,14 +156,12 @@ The plugin does not set any default mappings. You can create your own: >
 
 	" Example mappings using commands
 	nmap <leader>no :NotesOpenCurrent<CR>
-	nmap <leader>nc :NotesCompleteItem<CR>
 	nmap <leader>nt :NotesTaskNew<CR>
 	nmap <leader>ng :NotesTaskToggle<CR>
 	nmap <CR> :NotesMagic<CR>
 
 	" Example mappings using Lua functions
 	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
-	nnoremap <leader>nc <cmd>lua require('notes').complete_item()<CR>
 	nnoremap <leader>nt <cmd>lua require('notes').task_new()<CR>
 	nnoremap <leader>ng <cmd>lua require('notes').task_toggle()<CR>
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
@@ -182,7 +170,6 @@ The plugin does not set any default mappings. You can create your own: >
 For backward compatibility, <Plug> mappings are still available: >
 	" Legacy <Plug> mappings (still supported)
 	nmap <leader>no <Plug>NotesOpenCurrent
-	nmap <leader>nc <Plug>NotesCompleteItem
 <
 
 USAGE EXAMPLES						*notes-examples*
@@ -190,10 +177,6 @@ USAGE EXAMPLES						*notes-examples*
 Opening links:
 	Place cursor on any `[[filename]]` link and use `:NotesOpenCurrent`
 	to open `filename.md`
-
-Completing items:
-	Place cursor on any line and use `:NotesCompleteItem` to move
-	that line to today's daily file in the configured directory
 
 Creating tasks:
 	Use `:NotesTaskNew` to create a new task `- [ ] ` on the next line,

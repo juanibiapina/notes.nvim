@@ -33,7 +33,6 @@ Plug 'juanibiapina/notes.nvim'
 - `:NotesDailyToday` - Open today's daily note (format: `daily/YYYY-MM-DD.md`)
 - `:NotesTaskNew` - Create a new task `- [ ]` on the next line and enter insert mode
 - `:NotesTaskToggle` - Toggle task completion status between `- [ ]` and `- [x]`
-- `:NotesCompleteItem` - Move current line to today's daily file
 - `:NotesMagic` - Smart context-aware command (follows links or toggles tasks)
 - `:NotesRename {new_title}` - Rename current note and update all references (requires ripgrep)
 - `:NotesDelete` - Delete current note if no references to it exist (requires ripgrep)
@@ -44,7 +43,6 @@ The plugin doesn't set default mappings. You're welcome. Here are some I use:
 
 ```lua
 vim.keymap.set('n', '<CR>', ':NotesMagic', { desc = 'Notes: follow link or toggle task' })
-vim.keymap.set('n', '<leader>qd', ':NotesCompleteItem', { desc = 'Notes: complete item' })
 vim.keymap.set('n', '<leader>qoi', ':NotesOpen index', { desc = 'Notes: open index note')})
 vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open today\'s daily note'})
 ```
@@ -56,8 +54,6 @@ vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open tod
 **Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax. The command automatically enters insert mode at the end of the line.
 
 **Managing tasks**: Place cursor on a task line and use `:NotesTaskToggle` to switch between incomplete `- [ ]` and complete `- [x]` states.
-
-**Completing items**: Use `:NotesCompleteItem` to move any line to today's daily file and remove it from the current file.
 
 **Smart magic command**: `:NotesMagic` provides context-aware behavior:
 - On `[[link]]`: follows the link

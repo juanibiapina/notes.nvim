@@ -10,10 +10,6 @@ vim.api.nvim_create_user_command('NotesOpenCurrent', function()
   notes.open_current()
 end, { desc = 'Open link or file at current cursor position' })
 
-vim.api.nvim_create_user_command('NotesCompleteItem', function()
-  notes.complete_item()
-end, { desc = 'Move current line to daily file' })
-
 vim.api.nvim_create_user_command('NotesDailyToday', function()
   notes.daily_today()
 end, { desc = "Open today's daily file" })
@@ -40,4 +36,3 @@ end, { desc = 'Delete current note if no references to it exist' })
 
 -- For backward compatibility, keep the <Plug> mappings that call the commands
 vim.api.nvim_set_keymap('n', '<Plug>NotesOpenCurrent', ':NotesOpenCurrent<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Plug>NotesCompleteItem', ':NotesCompleteItem<CR>', { noremap = true, silent = true })
