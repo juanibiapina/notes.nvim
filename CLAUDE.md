@@ -18,7 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. **Daily Notes**: Date-based notes in `daily/YYYY-MM-DD.md` format
 3. **Task Management**: Markdown checkbox `- [ ]` / `- [x]` toggle system  
 4. **Magic Command**: Context-aware dispatcher that handles links, tasks, or list items
-5. **Safe Operations**: Reference-checking for rename/delete operations using ripgrep
+5. **Safe Operations**: Reference-checking for rename/remove operations using ripgrep
 
 ## Command Structure
 
@@ -26,11 +26,11 @@ All commands follow the pattern: `Notes{Action}` and delegate to corresponding f
 - File operations: `notes_open()`, `open_current()`
 - Daily notes: `daily_today()` 
 - Tasks: `task_new()`, task toggling via `magic()`
-- File management: `notes_rename()`, `notes_delete()`
+- File management: `notes_rename()`, `notes_remove()`
 
 ## Dependencies
 
-- **Required**: ripgrep (for reference searching in rename/delete operations)
+- **Required**: ripgrep (for reference searching in rename/remove operations)
 - **Vendored**: plenary.nvim (testing), telescope.nvim (search functionality)
 
 ## File Creation Behavior

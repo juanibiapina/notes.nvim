@@ -34,7 +34,7 @@ Plug 'juanibiapina/notes.nvim'
 - `:NotesTaskNew` - Create a new task `- [ ]` on the next line and enter insert mode
 - `:NotesMagic` - Smart context-aware command (follows links or toggles tasks)
 - `:NotesRename {new_title}` - Rename current note and update all references (requires ripgrep)
-- `:NotesDelete` - Delete current note if no references to it exist (requires ripgrep)
+- `:NotesRemove` - Remove current note if no references to it exist (requires ripgrep)
 
 ### Key Mappings
 
@@ -61,7 +61,7 @@ vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open tod
 
 **Renaming notes**: Use `:NotesRename {new_title}` to rename the current note. This automatically updates the file header and all `[[references]]` throughout your notes (requires ripgrep).
 
-**Deleting notes**: Use `:NotesDelete` to safely delete the current note. The command only deletes if no other notes reference it, preventing broken links (requires ripgrep).
+**Removing notes**: Use `:NotesRemove` to safely remove the current note. The command only removes if no other notes reference it, preventing broken links (requires ripgrep).
 
 ## 📚 Documentation
 

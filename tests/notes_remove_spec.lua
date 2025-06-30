@@ -1,6 +1,6 @@
 local helpers = require('tests.support.helpers')
 
-describe('NotesDelete command', function()
+describe('NotesRemove command', function()
   before_each(function()
     helpers.setup_test_env()
   end)
@@ -14,8 +14,8 @@ describe('NotesDelete command', function()
     helpers.set_buffer_content('some content')
     vim.cmd('write test.txt')
 
-    -- Try to delete it
-    vim.cmd('NotesDelete')
+    -- Try to remove it
+    vim.cmd('NotesRemove')
 
     -- Should show error message and file should still exist
     assert.are.equal('test.txt', vim.fn.expand('%:t'))
@@ -28,8 +28,8 @@ describe('NotesDelete command', function()
     vim.bo.filetype = 'markdown'
     vim.cmd('file test.md')
 
-    -- Try to delete it (file doesn't actually exist on disk)
-    require('notes').notes_delete()
+    -- Try to remove it (file doesn't actually exist on disk)
+    require('notes').notes_remove()
 
     -- Buffer should be removed (we should be editing a different buffer or none)
     assert.are_not.equal('test.md', vim.fn.expand('%:t'))
@@ -41,25 +41,25 @@ describe('NotesDelete command', function()
     vim.cmd('edit test-note.md')
 
     -- Assume ripgrep is available when running tests
-    require('notes').notes_delete()
+    require('notes').notes_remove()
 
-    -- File should be deleted since there are no references
+    -- File should be removed since there are no references
     assert.are.equal(0, vim.fn.filereadable('test-note.md'))
   end)
 
-  it('deletes note when no references exist', function()
+  it('removes note when no references exist', function()
     -- Create a test markdown file with no references
     helpers.create_test_file('lonely-note.md', '# lonely-note\nNo one references this note.')
     vim.cmd('edit lonely-note.md')
 
-    -- Delete it
-    require('notes').notes_delete()
+    -- Remove it
+    require('notes').notes_remove()
 
-    -- File should be deleted
+    -- File should be removed
     assert.are.equal(0, vim.fn.filereadable('lonely-note.md'))
   end)
 
-  it('refuses to delete note when references exist', function()
+  it('refuses to remove note when references exist', function()
     -- Create the note we want to delete
     helpers.create_test_file('referenced-note.md', '# referenced-note\nThis note is referenced.')
 
@@ -73,7 +73,7 @@ describe('NotesDelete command', function()
     vim.cmd('edit referenced-note.md')
 
     -- Try to delete it
-    require('notes').notes_delete()
+    require('notes').notes_remove()
 
     -- File should still exist because it has references
     assert.are.equal(1, vim.fn.filereadable('referenced-note.md'))
@@ -95,7 +95,7 @@ describe('NotesDelete command', function()
     vim.cmd('edit popular-note.md')
 
     -- Try to delete it
-    require('notes').notes_delete()
+    require('notes').notes_remove()
 
     -- File should still exist because it has multiple references
     assert.are.equal(1, vim.fn.filereadable('popular-note.md'))
@@ -104,17 +104,17 @@ describe('NotesDelete command', function()
     assert.are.equal('popular-note.md', vim.fn.expand('%:t'))
   end)
 
-  it('allows deletion when references are only in the same file', function()
+  it('allows removal when references are only in the same file', function()
     -- Create a note that references itself
     helpers.create_test_file('self-ref.md', '# self-ref\nThis note references itself: [[self-ref]].')
 
     -- Edit the note
     vim.cmd('edit self-ref.md')
 
-    -- Try to delete it
-    require('notes').notes_delete()
+    -- Try to remove it
+    require('notes').notes_remove()
 
-    -- File should be deleted because self-references are allowed
+    -- File should be removed because self-references are allowed
     assert.are.equal(0, vim.fn.filereadable('self-ref.md'))
 
     -- Should have switched to a different buffer
@@ -134,10 +134,10 @@ describe('NotesDelete command', function()
     -- Edit the target note
     vim.cmd('edit exact.md')
 
-    -- Delete it (should work because there are no exact references)
-    require('notes').notes_delete()
+    -- Remove it (should work because there are no exact references)
+    require('notes').notes_remove()
 
-    -- File should be deleted since partial matches don't count
+    -- File should be removed since partial matches don't count
     assert.are.equal(0, vim.fn.filereadable('exact.md'))
   end)
 
@@ -146,10 +146,10 @@ describe('NotesDelete command', function()
     helpers.create_test_file('cmd-test.md', '# cmd-test\nTesting command interface.')
     vim.cmd('edit cmd-test.md')
 
-    -- Delete using command
-    vim.cmd('NotesDelete')
+    -- Remove using command
+    vim.cmd('NotesRemove')
 
-    -- File should be deleted
+    -- File should be removed
     assert.are.equal(0, vim.fn.filereadable('cmd-test.md'))
   end)
 
@@ -164,7 +164,7 @@ describe('NotesDelete command', function()
     vim.cmd('edit special-chars.md')
 
     -- Try to delete it
-    require('notes').notes_delete()
+    require('notes').notes_remove()
 
     -- Should not be deleted because it has a reference
     assert.are.equal(1, vim.fn.filereadable('special-chars.md'))

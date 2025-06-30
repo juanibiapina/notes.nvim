@@ -238,7 +238,7 @@ function M.magic()
 end
 
 -- Find all files that reference the given note name using ripgrep
--- Returns a table with file references that can be used for rename or delete operations
+-- Returns a table with file references that can be used for rename or remove operations
 -- Throws an error if ripgrep is not available
 function M.find_references(note_name)
   -- Check if ripgrep is available
@@ -352,8 +352,8 @@ function M.notes_rename(new_title)
   end
 end
 
--- Delete the current note if no references to it exist
-function M.notes_delete()
+-- Remove the current note if no references to it exist
+function M.notes_remove()
   -- Get current file info
   local current_file = vim.fn.expand('%:p')
   local current_name = vim.fn.expand('%:t:r') -- filename without extension
@@ -382,7 +382,7 @@ function M.notes_delete()
 
   -- Check if there are any external references
   if #external_references > 0 then
-    print('Error: Cannot delete note "' .. current_name .. '" - it has ' .. #external_references .. ' reference(s)')
+    print('Error: Cannot remove note "' .. current_name .. '" - it has ' .. #external_references .. ' reference(s)')
     print('Found references in:')
     for _, ref in ipairs(external_references) do
       print('  ' .. ref.file .. ':' .. ref.line)
@@ -393,13 +393,13 @@ function M.notes_delete()
   -- Close the buffer
   vim.cmd('bdelete!')
 
-  -- Delete the file if it exists
+  -- Remove the file if it exists
   local file_exists = vim.fn.filereadable(current_file) == 1
   if file_exists then
     vim.fn.delete(current_file)
   end
 
-  print('Deleted note "' .. current_name .. '"')
+  print('Removed note "' .. current_name .. '"')
 end
 
 return M

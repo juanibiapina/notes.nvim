@@ -82,20 +82,20 @@ COMMANDS						*notes-commands*
 		:NotesRename new-note       " Renames to "new-note.md"
 <
 
-:NotesDelete						*:NotesDelete*
-	Delete the current note if no references to it exist:
-	- Safely deletes the current note file only if no other notes reference it
+:NotesRemove						*:NotesRemove*
+	Remove the current note if no references to it exist:
+	- Safely removes the current note file only if no other notes reference it
 	- Uses ripgrep to find all `[[note_name]]` references throughout the project
-	- Prevents accidental deletion of notes that would create broken links
+	- Prevents accidental removal of notes that would create broken links
 	- Requires ripgrep
 	- Only works on markdown files (`.md` extension)
-	- Closes the buffer after successful deletion
+	- Closes the buffer after successful removal
 	
 	If references are found, displays the list of files containing references
-	and refuses to delete the note.
+	and refuses to remove the note.
 	
 	Examples: >
-		:NotesDelete                " Deletes current note if safe to do so
+		:NotesRemove                " Removes current note if safe to do so
 <
 
 LUA FUNCTIONS						*notes-functions*
@@ -120,8 +120,8 @@ require('notes').magic()				*notes.magic()*
 require('notes').notes_rename({new_title})		*notes.notes_rename()*
 	Lua equivalent of `:NotesRename` command.
 
-require('notes').notes_delete()				*notes.notes_delete()*
-	Lua equivalent of `:NotesDelete` command.
+require('notes').notes_remove()				*notes.notes_remove()*
+	Lua equivalent of `:NotesRemove` command.
 
 require('notes').find_references({note_name})		*notes.find_references()*
 	Find all files that reference the given note name using ripgrep.
