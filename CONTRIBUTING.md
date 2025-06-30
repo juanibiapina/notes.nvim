@@ -76,6 +76,11 @@ Run linting with:
 make lint
 ```
 
+Run CI locally with:
+```bash
+make ci
+```
+
 ## Code Style
 
 Follow the existing code style in the project. Use the linting tools to ensure consistency.
