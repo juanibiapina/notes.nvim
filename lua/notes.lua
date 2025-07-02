@@ -112,6 +112,21 @@ function M.move_to_today()
   -- Save the changes to the daily file
   vim.fn.writefile(done_contents, done_filename)
 
+  -- Check if the daily file is open in any buffer and refresh it
+  local absolute_done_filename = vim.fn.fnamemodify(done_filename, ':p')
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) then
+      local buf_name = vim.api.nvim_buf_get_name(buf)
+      if buf_name == absolute_done_filename then
+        -- Refresh the buffer from file
+        vim.api.nvim_buf_call(buf, function()
+          vim.cmd('checktime')
+        end)
+        break
+      end
+    end
+  end
+
   -- Delete the current line from the original file
   vim.cmd('delete')
 end

@@ -56,4 +56,42 @@ describe('NotesMoveToToday', function()
     -- Check if the item has been moved to the daily file
     assert.are.equal('- Lua function todo item', daily_file_contents[#daily_file_contents])
   end)
+
+  it('refreshes daily buffer when it is open in a split window', function()
+    -- Given
+    helpers.set_buffer_content('- Item to move')
+    vim.cmd('normal! gg')
+
+    -- Create and open the daily file in a split window
+    local daily_file = 'daily/' .. today .. '.md'
+    vim.fn.mkdir('daily', 'p')
+    vim.fn.writefile({ '# ' .. today, '- Existing item' }, daily_file)
+
+    -- Open the daily file in a split
+    vim.cmd('split ' .. daily_file)
+    local daily_buf = vim.api.nvim_get_current_buf()
+
+    -- Switch back to the original buffer
+    vim.cmd('wincmd p')
+
+    -- Verify the daily buffer shows original content
+    local original_content = vim.api.nvim_buf_get_lines(daily_buf, 0, -1, false)
+    assert.are.equal(2, #original_content)
+    assert.are.equal('# ' .. today, original_content[1])
+    assert.are.equal('- Existing item', original_content[2])
+
+    -- When - Execute the move command
+    require('notes').move_to_today()
+
+    -- Then - The daily buffer should be refreshed with the new content
+    local refreshed_content = vim.api.nvim_buf_get_lines(daily_buf, 0, -1, false)
+    assert.are.equal(3, #refreshed_content)
+    assert.are.equal('# ' .. today, refreshed_content[1])
+    assert.are.equal('- Existing item', refreshed_content[2])
+    assert.are.equal('- Item to move', refreshed_content[3])
+
+    -- And the original line should be deleted
+    local new_current_line = vim.fn.getline(1)
+    assert.are.equal('', new_current_line)
+  end)
 end)
