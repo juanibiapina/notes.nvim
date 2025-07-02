@@ -68,12 +68,13 @@ describe('NotesMoveToToday', function()
 
     -- Then - The daily buffer should be refreshed with the new structured content
     local refreshed_content = vim.api.nvim_buf_get_lines(daily_buf, 0, -1, false)
-    assert.are.equal(5, #refreshed_content)
+    assert.are.equal(6, #refreshed_content) -- Updated to expect proper spacing
     assert.are.equal('# ' .. today, refreshed_content[1])
     assert.are.equal('- Existing item', refreshed_content[2])
-    assert.are.equal('## Tasks', refreshed_content[3])
-    assert.are.equal('### [[source]]', refreshed_content[4])
-    assert.are.equal('- Item to move', refreshed_content[5])
+    assert.are.equal('', refreshed_content[3])  -- Empty line before Tasks section
+    assert.are.equal('## Tasks', refreshed_content[4])
+    assert.are.equal('### [[source]]', refreshed_content[5])
+    assert.are.equal('- Item to move', refreshed_content[6])
 
     -- And the original line should be deleted
     local new_current_line = vim.fn.getline(1)
@@ -96,14 +97,15 @@ describe('NotesMoveToToday', function()
 
     -- Then
     local daily_file_contents = vim.fn.readfile(tempfile_path)
-    assert.are.equal(7, #daily_file_contents)
+    assert.are.equal(8, #daily_file_contents) -- Updated to expect proper spacing
     assert.are.equal('# ' .. today, daily_file_contents[1])
     assert.are.equal('', daily_file_contents[2])
     assert.are.equal('## Journal', daily_file_contents[3])
     assert.are.equal('Some journal entry', daily_file_contents[4])
-    assert.are.equal('## Tasks', daily_file_contents[5])
-    assert.are.equal('### [[project]]', daily_file_contents[6])
-    assert.are.equal('- New task from project', daily_file_contents[7])
+    assert.are.equal('', daily_file_contents[5])  -- Empty line before new Tasks section
+    assert.are.equal('## Tasks', daily_file_contents[6])
+    assert.are.equal('### [[project]]', daily_file_contents[7])
+    assert.are.equal('- New task from project', daily_file_contents[8])
   end)
 
   it('creates note subsection when Tasks section exists but note subsection does not', function()
