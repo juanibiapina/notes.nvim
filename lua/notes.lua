@@ -86,6 +86,36 @@ function M.open_current()
   M.notes_open(title)
 end
 
+-- Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
+-- This format is compatible with Obsidian daily notes
+function M.move_to_today()
+  local today = os.date('%Y-%m-%d')
+  local done_filename = 'daily/' .. today .. '.md'
+  local current_line = vim.fn.getline('.')
+
+  -- Create the daily directory if it doesn't exist
+  if vim.fn.isdirectory('daily') == 0 then
+    vim.fn.mkdir('daily', 'p')
+  end
+
+  -- Check if the daily file exists, if not, create it
+  if vim.fn.filereadable(done_filename) == 0 then
+    vim.fn.writefile({}, done_filename)
+  end
+
+  -- Read the contents of the daily file
+  local done_contents = vim.fn.readfile(done_filename)
+
+  -- Append the current line to the file
+  table.insert(done_contents, current_line)
+
+  -- Save the changes to the daily file
+  vim.fn.writefile(done_contents, done_filename)
+
+  -- Delete the current line from the original file
+  vim.cmd('delete')
+end
+
 -- Opens today's daily file under the format daily/YYYY-MM-DD.md
 -- This format is compatible with Obsidian daily notes
 function M.daily_today()

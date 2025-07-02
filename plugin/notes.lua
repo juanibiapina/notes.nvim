@@ -10,6 +10,10 @@ vim.api.nvim_create_user_command('NotesOpenCurrent', function()
   notes.open_current()
 end, { desc = 'Open link or file at current cursor position' })
 
+vim.api.nvim_create_user_command('NotesMoveToToday', function()
+  notes.move_to_today()
+end, { desc = 'Move current line to daily file' })
+
 vim.api.nvim_create_user_command('NotesDailyToday', function()
   notes.daily_today()
 end, { desc = "Open today's daily file" })
