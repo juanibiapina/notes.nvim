@@ -9,16 +9,7 @@ describe('NotesOpen command', function()
     helpers.teardown_test_env()
   end)
 
-  it('exposes a command to jump to a specific file', function()
-    -- when
-    vim.cmd('NotesOpen file.md')
-
-    -- then
-    local filename = vim.fn.expand('%:t')
-    assert.are.equal('file.md', filename)
-  end)
-
-  it('auto-appends .md extension when only note name is provided', function()
+  it('auto-appends .md extension', function()
     -- when
     vim.cmd('NotesOpen myNote')
 

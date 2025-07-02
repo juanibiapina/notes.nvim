@@ -2,14 +2,14 @@ local Note = {}
 
 Note.__index = Note
 
-function Note:new(title)
+function Note:new(name)
   if type(self) == 'string' then
-    title = self
+    name = self
     self = Note -- luacheck: ignore
   end
 
   local obj = {
-    title = title,
+    name = name,
   }
 
   setmetatable(obj, Note)
@@ -17,10 +17,17 @@ function Note:new(title)
 end
 
 function Note:path()
-  if not self.title:match('%.md$') then
-    return self.title .. '.md'
-  else
-    return self.title
+  return self.name .. '.md'
+end
+
+function Note:exists()
+  return vim.fn.filereadable(self:path()) == 1
+end
+
+function Note:create_with_header()
+  if not self:exists() then
+    local header = '# ' .. self.name
+    vim.fn.writefile({ header }, self:path())
   end
 end
 

@@ -16,21 +16,12 @@ local function is_complete_task(line)
   return line:match('^%s*-%s+%[x%]') ~= nil
 end
 
--- Open a note file, automatically appending .md extension if not present
+-- Open a note by name
 -- Creates file with header if it doesn't exist
-function M.notes_open(title)
-  local note = Note:new(title)
-  local filename = note:path()
-
-  -- Check if the file exists, if not, create it with a header
-  if vim.fn.filereadable(filename) == 0 then
-    -- Extract note name from filename (remove .md extension)
-    local note_name = filename:gsub('%.md$', '')
-    local header = '# ' .. note_name
-    vim.fn.writefile({ header }, filename)
-  end
-
-  vim.cmd('edit ' .. filename)
+function M.notes_open(name)
+  local note = Note:new(name)
+  note:create_with_header()
+  vim.cmd('edit ' .. note:path())
 end
 
 -- Treats the current line as a link and open that file
@@ -56,20 +47,20 @@ function M.open_current()
     start = match_end + 1
   end
 
-  local title
+  local name
   if #matches == 0 then
     -- No obsidian links found
     print('No link found')
     return
   elseif #matches == 1 then
     -- If there's only one link, use it
-    title = matches[1].inner_text
+    name = matches[1].inner_text
   else
     -- If there are multiple links, find which one the cursor is on
     local on_link = false
     for _, match in ipairs(matches) do
       if cursor_col >= match.pos and cursor_col <= match.pos + #match.text - 1 then
-        title = match.inner_text
+        name = match.inner_text
         on_link = true
         break
       end
@@ -81,7 +72,7 @@ function M.open_current()
   end
 
   -- Use notes_open to handle file opening
-  M.notes_open(title)
+  M.notes_open(name)
 end
 
 -- Appends text to a file
@@ -331,9 +322,9 @@ function M.find_references(note_name)
 end
 
 -- Rename the current note file, header and all references
-function M.notes_rename(new_title)
-  if not new_title or new_title == '' then
-    print('Error: New title is required')
+function M.notes_rename(new_name)
+  if not new_name or new_name == '' then
+    print('Error: New name is required')
     return
   end
 
@@ -354,7 +345,7 @@ function M.notes_rename(new_title)
   end
 
   -- Prepare new filename
-  local new_filename = new_title .. '.md'
+  local new_filename = new_name .. '.md'
   local current_dir = vim.fn.expand('%:p:h')
   local new_file_path = current_dir .. '/' .. new_filename
 
@@ -372,7 +363,7 @@ function M.notes_rename(new_title)
 
   -- Update header if it matches the current filename
   if #content > 0 and content[1] == '# ' .. current_name then
-    content[1] = '# ' .. new_title
+    content[1] = '# ' .. new_name
   end
 
   -- Write content to new file
@@ -388,7 +379,7 @@ function M.notes_rename(new_title)
       if i == ref.line then
         -- Replace the reference in this line
         local old_ref = '[[' .. current_name .. ']]'
-        local new_ref = '[[' .. new_title .. ']]'
+        local new_ref = '[[' .. new_name .. ']]'
         file_content[i] = line:gsub(vim.pesc(old_ref), new_ref)
         break
       end
@@ -399,7 +390,7 @@ function M.notes_rename(new_title)
   -- Open the new file
   vim.cmd('edit ' .. new_file_path)
 
-  print('Renamed note from "' .. current_name .. '" to "' .. new_title .. '"')
+  print('Renamed note from "' .. current_name .. '" to "' .. new_name .. '"')
   if #references > 0 then
     print('Updated ' .. #references .. ' reference(s)')
   end

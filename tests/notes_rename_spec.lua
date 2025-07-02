@@ -23,7 +23,7 @@ describe('NotesRename command', function()
     assert.are.equal('test.txt', vim.fn.expand('%:t'))
   end)
 
-  it('validates that new title is provided', function()
+  it('validates that new name is provided', function()
     -- Create a test markdown file
     helpers.create_test_file('original.md', '# original\nsome content')
     vim.cmd('edit original.md')
