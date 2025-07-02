@@ -133,7 +133,14 @@ local function append_to_structured_daily_file(filename, text, note_name)
     end
     
     table.insert(content, '## Tasks')
+    table.insert(content, '')  -- Empty line after Tasks header
     tasks_section_index = insert_index
+  else
+    -- Tasks section exists - add empty line after header if we're creating a new subsection
+    -- and there isn't already an empty line
+    if not note_section_index and tasks_section_index < #content and content[tasks_section_index + 1] ~= '' then
+      table.insert(content, tasks_section_index + 1, '')
+    end
   end
 
   -- If no note section exists, create it after Tasks section
@@ -153,6 +160,7 @@ local function append_to_structured_daily_file(filename, text, note_name)
     end
     
     table.insert(content, insert_index, note_section_header)
+    table.insert(content, insert_index + 1, '')  -- Empty line after subsection header
     note_section_index = insert_index
   end
 

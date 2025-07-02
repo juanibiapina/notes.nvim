@@ -46,7 +46,9 @@ describe('NotesMoveToToday spacing improvements', function()
         'More content here',
         '',  -- Empty line before Tasks
         '## Tasks',
+        '',  -- Empty line after Tasks header
         '### [[project]]',
+        '',  -- Empty line after subsection header
         '- Task to move'
       }
       assert.are.same(expected_content, daily_file_contents)
@@ -81,7 +83,9 @@ describe('NotesMoveToToday spacing improvements', function()
         'Some journal entry',
         '',  -- Existing empty line
         '## Tasks',
+        '',  -- Empty line after Tasks header
         '### [[project]]',
+        '',  -- Empty line after subsection header
         '- Task to move'
       }
       assert.are.same(expected_content, daily_file_contents)
@@ -116,9 +120,11 @@ describe('NotesMoveToToday spacing improvements', function()
       local expected_content = {
         '# ' .. today,
         '## Tasks',
+        '',  -- Empty line after Tasks header
         '### [[existing]]',
         '- Existing task',
         '### [[newproject]]',  -- New subsection before Notes
+        '',  -- Empty line after new subsection header
         '- New task',
         '',  -- Proper spacing before next section
         '## Notes',
@@ -220,7 +226,9 @@ describe('NotesMoveToToday spacing improvements', function()
       local daily_file_contents = vim.fn.readfile(tempfile_path)
       local expected_content = {
         '## Tasks',
+        '',  -- Empty line after Tasks header
         '### [[project]]',
+        '',  -- Empty line after subsection header
         '- First task'
       }
       assert.are.same(expected_content, daily_file_contents)
@@ -246,7 +254,9 @@ describe('NotesMoveToToday spacing improvements', function()
         '# ' .. today,
         '',  -- Empty line after header
         '## Tasks',
+        '',  -- Empty line after Tasks header
         '### [[project]]',
+        '',  -- Empty line after subsection header
         '- Task for file with header only'
       }
       assert.are.same(expected_content, daily_file_contents)
