@@ -1,3 +1,6 @@
+local Path = require('plenary.path')
+local Note = require('notes.note')
+
 local M = {}
 
 -- Helper functions for line analysis
@@ -16,13 +19,8 @@ end
 -- Open a note file, automatically appending .md extension if not present
 -- Creates file with header if it doesn't exist
 function M.notes_open(title)
-  -- Check if title already ends with .md
-  local filename
-  if not title:match('%.md$') then
-    filename = title .. '.md'
-  else
-    filename = title
-  end
+  local note = Note:new(title)
+  local filename = note:path()
 
   -- Check if the file exists, if not, create it with a header
   if vim.fn.filereadable(filename) == 0 then
@@ -86,39 +84,35 @@ function M.open_current()
   M.notes_open(title)
 end
 
--- Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
--- This format is compatible with Obsidian daily notes
-function M.move_to_today()
-  local today = os.date('%Y-%m-%d')
-  local done_filename = 'daily/' .. today .. '.md'
-  local current_line = vim.fn.getline('.')
+-- Appends text to a file
+local function append_to_file(filename, text)
+  local path = Path:new(filename)
 
-  -- Create the daily directory if it doesn't exist
-  if vim.fn.isdirectory('daily') == 0 then
-    vim.fn.mkdir('daily', 'p')
+  -- Create file and parent directories if needed
+  path:touch({ parents = true })
+
+  -- Read existing content (empty table if file doesn't exist)
+  local content = path:readlines()
+
+  -- Remove empty trailing line if it exists (common with readlines)
+  if #content > 0 and content[#content] == '' then
+    table.remove(content)
   end
 
-  -- Check if the daily file exists, if not, create it
-  if vim.fn.filereadable(done_filename) == 0 then
-    vim.fn.writefile({}, done_filename)
-  end
+  -- Append the new text
+  table.insert(content, text)
 
-  -- Read the contents of the daily file
-  local done_contents = vim.fn.readfile(done_filename)
+  -- Write all content back to file
+  path:write(table.concat(content, '\n'), 'w')
+end
 
-  -- Append the current line to the file
-  table.insert(done_contents, current_line)
-
-  -- Save the changes to the daily file
-  vim.fn.writefile(done_contents, done_filename)
-
-  -- Check if the daily file is open in any buffer and refresh it
-  local absolute_done_filename = vim.fn.fnamemodify(done_filename, ':p')
+-- Refreshes any open buffers showing the specified file
+local function refresh_file_buffers(filename)
+  local absolute_path = Path:new(filename):absolute()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_loaded(buf) then
       local buf_name = vim.api.nvim_buf_get_name(buf)
-      if buf_name == absolute_done_filename then
-        -- Refresh the buffer from file
+      if buf_name == absolute_path then
         vim.api.nvim_buf_call(buf, function()
           vim.cmd('checktime')
         end)
@@ -126,6 +120,20 @@ function M.move_to_today()
       end
     end
   end
+end
+
+-- Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
+-- This format is compatible with Obsidian daily notes
+function M.move_to_today()
+  local today = os.date('%Y-%m-%d')
+  local done_filename = 'daily/' .. today .. '.md'
+  local current_line = vim.fn.getline('.')
+
+  -- Append the current line to the daily file
+  append_to_file(done_filename, current_line)
+
+  -- Refresh any open buffers showing the daily file
+  refresh_file_buffers(done_filename)
 
   -- Delete the current line from the original file
   vim.cmd('delete')

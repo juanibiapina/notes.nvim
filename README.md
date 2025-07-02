@@ -13,6 +13,7 @@ A simple notes manager for Neovim inspired by Obsidian.
 ### vim-plug
 
 ```vim
+Plug 'nvim-lua/plenary.nvim'
 Plug 'juanibiapina/notes.nvim'
 ```
 
@@ -21,6 +22,7 @@ Plug 'juanibiapina/notes.nvim'
 ```lua
 {
   "juanibiapina/notes.nvim",
+  dependencies = { "nvim-lua/plenary.nvim" },
 }
 ```
 
