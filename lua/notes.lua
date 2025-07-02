@@ -75,8 +75,8 @@ function M.open_current()
   M.notes_open(name)
 end
 
--- Appends text to a file
-local function append_to_file(filename, text)
+-- Appends text to daily file under structured sections: ## Tasks > ### [[note_name]]
+local function append_to_structured_daily_file(filename, text, note_name)
   local path = Path:new(filename)
 
   -- Create file and parent directories if needed
@@ -90,8 +90,51 @@ local function append_to_file(filename, text)
     table.remove(content)
   end
 
-  -- Append the new text
-  table.insert(content, text)
+  -- Find or create the structure
+  local tasks_section_index = nil
+  local note_section_index = nil
+  local note_section_header = '### [[' .. note_name .. ']]'
+
+  -- First pass: find existing sections
+  for i, line in ipairs(content) do
+    if line == '## Tasks' then
+      tasks_section_index = i
+    elseif line == note_section_header then
+      note_section_index = i
+    end
+  end
+
+  -- If no Tasks section exists, create it at the end
+  if not tasks_section_index then
+    table.insert(content, '## Tasks')
+    tasks_section_index = #content
+  end
+
+  -- If no note section exists, create it after Tasks section
+  if not note_section_index then
+    -- Find where to insert the note section (after Tasks but before next ## section or end)
+    local insert_index = #content + 1
+    for i = tasks_section_index + 1, #content do
+      if content[i]:match('^## ') then
+        insert_index = i
+        break
+      end
+    end
+    table.insert(content, insert_index, note_section_header)
+    note_section_index = insert_index
+  end
+
+  -- Find where to append the text (at the end of the note section)
+  local append_index = #content + 1
+  for i = note_section_index + 1, #content do
+    if content[i]:match('^##') or content[i]:match('^###') then
+      append_index = i
+      break
+    end
+  end
+
+  -- Insert the text
+  table.insert(content, append_index, text)
 
   -- Write all content back to file
   path:write(table.concat(content, '\n'), 'w')
@@ -119,9 +162,10 @@ function M.move_to_today()
   local today = os.date('%Y-%m-%d')
   local done_filename = 'daily/' .. today .. '.md'
   local current_line = vim.fn.getline('.')
+  local current_note_name = vim.fn.expand('%:t:r')
 
-  -- Append the current line to the daily file
-  append_to_file(done_filename, current_line)
+  -- Append the current line to the daily file under structured sections
+  append_to_structured_daily_file(done_filename, current_line, current_note_name)
 
   -- Refresh any open buffers showing the daily file
   refresh_file_buffers(done_filename)
