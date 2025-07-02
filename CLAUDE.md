@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 - See @README.md for project overview.
-- See @CONTRIBUTING.md for detailed development information.
+- Always follow @CONTRIBUTING.md
 
 ## Core Components
 
