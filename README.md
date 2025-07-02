@@ -34,6 +34,7 @@ Plug 'juanibiapina/notes.nvim'
 - `:NotesOpenCurrent` - Open link under cursor or follow `[[filename]]` links
 - `:NotesDailyToday` - Open today's daily note (format: `daily/YYYY-MM-DD.md`)
 - `:NotesTaskNew` - Create a new task `- [ ]` on the next line and enter insert mode
+- `:NotesLink` - Wrap word under cursor in `[[ ]]` to create a reference
 - `:NotesMoveToToday` - Move current line to today's daily file
 - `:NotesMagic` - Smart context-aware command (follows links or toggles tasks)
 - `:NotesRename {new_name}` - Rename current note and update all references (requires ripgrep)
@@ -46,6 +47,7 @@ The plugin doesn't set default mappings. You're welcome. Here are some I use:
 ```lua
 vim.keymap.set('n', '<CR>', ':NotesMagic', { desc = 'Notes: follow link or toggle task' })
 vim.keymap.set('n', '<leader>qd', ':NotesMoveToToday', { desc = 'Notes: move line to today\'s daily note' })
+vim.keymap.set('n', '<leader>ql', ':NotesLink', { desc = 'Notes: wrap word under cursor in [[ ]]' })
 vim.keymap.set('n', '<leader>qoi', ':NotesOpen index', { desc = 'Notes: open index note')})
 vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open today\'s daily note'})
 ```
@@ -55,6 +57,8 @@ vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open tod
 **Following links**: Place cursor on any `[[filename]]` link and press your mapped key or use `:NotesOpenCurrent` to open `filename.md`.
 
 **Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax. The command automatically enters insert mode at the end of the line.
+
+**Creating links**: Use `:NotesLink` to wrap the word under the cursor in `[[ ]]` brackets, creating an Obsidian-style reference. Works with words containing underscores and hyphens. Does nothing if cursor is on whitespace or already inside a link.
 
 **Move line to today's daily note**: Use `:NotesMoveToToday` to move any line to today's daily file and remove it from the current file.
 

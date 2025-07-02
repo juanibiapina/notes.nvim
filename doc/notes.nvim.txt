@@ -64,6 +64,19 @@ COMMANDS						*notes-commands*
 	- Positions cursor at the end for immediate editing
 	- Works from any line in the buffer
 
+:NotesLink						*:NotesLink*
+	Wrap the word under cursor in `[[ ]]` to create a reference:
+	- Wraps the word under cursor in Obsidian-style link brackets
+	- Works with words containing underscores and hyphens
+	- Does nothing if cursor is on whitespace or already inside a link
+	- Smart word boundary detection for complex words like `file_name-test`
+	
+	Examples: >
+		" With cursor on 'filename': becomes [[filename]]
+		" With cursor on 'my_note-draft': becomes [[my_note-draft]]
+		" No change if cursor is on whitespace or already in [[link]]
+<
+
 :NotesMagic						*:NotesMagic*
 	Smart command that behaves contextually based on cursor position:
 	1. If cursor is on an Obsidian-style link `[[filename]]`, follows the link
@@ -124,6 +137,9 @@ require('notes').daily_today()				*notes.daily_today()*
 require('notes').task_new()				*notes.task_new()*
 	Lua equivalent of `:NotesTaskNew` command.
 
+require('notes').notes_link()				*notes.notes_link()*
+	Lua equivalent of `:NotesLink` command.
+
 require('notes').magic()				*notes.magic()*
 	Lua equivalent of `:NotesMagic` command.
 
@@ -158,12 +174,14 @@ The plugin does not set any default mappings. You can create your own: >
 	nmap <leader>no :NotesOpenCurrent<CR>
 	nmap <leader>nc :NotesMoveToToday<CR>
 	nmap <leader>nt :NotesTaskNew<CR>
+	nmap <leader>ql :NotesLink<CR>
 	nmap <CR> :NotesMagic<CR>
 
 	" Example mappings using Lua functions
 	nnoremap <leader>no <cmd>lua require('notes').open_current()<CR>
 	nnoremap <leader>nc <cmd>lua require('notes').move_to_today()<CR>
 	nnoremap <leader>nt <cmd>lua require('notes').task_new()<CR>
+	nnoremap <leader>ql <cmd>lua require('notes').notes_link()<CR>
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
 <
 
@@ -181,6 +199,12 @@ Creating tasks:
 	Use `:NotesTaskNew` to create a new task `- [ ] ` on the next line,
 	with cursor positioned for immediate editing. The command automatically
 	enters insert mode so you can start typing the task description.
+
+Creating links:
+	Use `:NotesLink` to wrap the word under cursor in `[[ ]]` brackets,
+	creating an Obsidian-style reference. Works with words containing
+	underscores and hyphens. Does nothing if cursor is on whitespace
+	or already inside a link.
 
 Smart context-aware command:
 	Use `:NotesMagic` for context-aware behavior:

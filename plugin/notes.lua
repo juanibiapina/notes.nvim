@@ -33,3 +33,7 @@ end, { nargs = 1, desc = 'Rename current note file, header and all references' }
 vim.api.nvim_create_user_command('NotesRemove', function()
   notes.notes_remove()
 end, { desc = 'Remove current note if no references to it exist' })
+
+vim.api.nvim_create_user_command('NotesLink', function()
+  notes.notes_link()
+end, { desc = 'Wrap word under cursor in [[ ]] to make it a link' })

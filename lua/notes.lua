@@ -490,4 +490,82 @@ function M.notes_remove()
   print('Removed note "' .. current_name .. '"')
 end
 
+-- Wrap the word under cursor in [[ ]] to make it a link
+function M.notes_link()
+  -- Get current line and cursor position
+  local line = vim.fn.getline('.')
+  local cursor_col = vim.fn.col('.')
+
+  -- Check if cursor is on whitespace or at end of line
+  local char_under_cursor = line:sub(cursor_col, cursor_col)
+  if char_under_cursor:match('%s') or char_under_cursor == '' then
+    return
+  end
+
+  -- Check if cursor is already inside an obsidian link
+  local pattern = '%[%[(.-)%]%]'
+  local start = 1
+  while true do
+    local match_start, match_end = line:find(pattern, start)
+    if not match_start then
+      break
+    end
+    -- If cursor is inside this link, do nothing
+    if cursor_col >= match_start and cursor_col <= match_end then
+      return
+    end
+    start = match_end + 1
+  end
+
+  -- Find the word boundaries around the cursor position
+  -- A word is defined as a sequence of word characters, underscores, and hyphens
+  local word_start = cursor_col
+  local word_end = cursor_col
+
+  -- Find the start of the word
+  while word_start > 1 do
+    local char = line:sub(word_start - 1, word_start - 1)
+    if char:match('[%w_-]') then
+      word_start = word_start - 1
+    else
+      break
+    end
+  end
+
+  -- Find the end of the word
+  while word_end <= #line do
+    local char = line:sub(word_end, word_end)
+    if char:match('[%w_-]') then
+      word_end = word_end + 1
+    else
+      break
+    end
+  end
+
+  -- Adjust word_end to be the last character of the word
+  word_end = word_end - 1
+
+  -- If we didn't find a valid word, return
+  if word_start > word_end then
+    return
+  end
+
+  -- Extract the word
+  local word = line:sub(word_start, word_end)
+
+  -- Do nothing if no word found
+  if not word or word == '' then
+    return
+  end
+
+  -- Replace the word with [[word]]
+  local before = line:sub(1, word_start - 1)
+  local after = line:sub(word_end + 1)
+  local new_line = before .. '[[' .. word .. ']]' .. after
+
+  -- Update the line
+  local line_num = vim.fn.line('.')
+  vim.fn.setline(line_num, new_line)
+end
+
 return M
