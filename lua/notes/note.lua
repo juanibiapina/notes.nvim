@@ -3,9 +3,9 @@ local Note = {}
 Note.__index = Note
 
 function Note:new(title)
-  if type(self) == "string" then
+  if type(self) == 'string' then
     title = self
-    self = Note
+    self = Note -- luacheck: ignore
   end
 
   local obj = {
