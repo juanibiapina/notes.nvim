@@ -38,16 +38,18 @@ describe('NotesMoveToToday spacing improvements', function()
 
       -- Then
       local daily_file_contents = vim.fn.readfile(tempfile_path)
-      assert.are.equal(9, #daily_file_contents) -- Should have proper spacing
-      assert.are.equal('# ' .. today, daily_file_contents[1])
-      assert.are.equal('', daily_file_contents[2])
-      assert.are.equal('## Journal', daily_file_contents[3])
-      assert.are.equal('Some journal entry', daily_file_contents[4])
-      assert.are.equal('More content here', daily_file_contents[5])
-      assert.are.equal('', daily_file_contents[6]) -- Empty line before Tasks
-      assert.are.equal('## Tasks', daily_file_contents[7])
-      assert.are.equal('### [[project]]', daily_file_contents[8])
-      assert.are.equal('- Task to move', daily_file_contents[9])
+      local expected_content = {
+        '# ' .. today,
+        '',
+        '## Journal',
+        'Some journal entry',
+        'More content here',
+        '',  -- Empty line before Tasks
+        '## Tasks',
+        '### [[project]]',
+        '- Task to move'
+      }
+      assert.are.same(expected_content, daily_file_contents)
     end)
 
     it('does not add extra spacing if empty line already exists before Tasks section', function()
@@ -72,15 +74,17 @@ describe('NotesMoveToToday spacing improvements', function()
 
       -- Then
       local daily_file_contents = vim.fn.readfile(tempfile_path)
-      assert.are.equal(8, #daily_file_contents) -- Should not add extra empty line
-      assert.are.equal('# ' .. today, daily_file_contents[1])
-      assert.are.equal('', daily_file_contents[2])
-      assert.are.equal('## Journal', daily_file_contents[3])
-      assert.are.equal('Some journal entry', daily_file_contents[4])
-      assert.are.equal('', daily_file_contents[5]) -- Existing empty line
-      assert.are.equal('## Tasks', daily_file_contents[6])
-      assert.are.equal('### [[project]]', daily_file_contents[7])
-      assert.are.equal('- Task to move', daily_file_contents[8])
+      local expected_content = {
+        '# ' .. today,
+        '',
+        '## Journal', 
+        'Some journal entry',
+        '',  -- Existing empty line
+        '## Tasks',
+        '### [[project]]',
+        '- Task to move'
+      }
+      assert.are.same(expected_content, daily_file_contents)
     end)
   end)
 
@@ -109,16 +113,18 @@ describe('NotesMoveToToday spacing improvements', function()
 
       -- Then  
       local daily_file_contents = vim.fn.readfile(tempfile_path)
-      assert.are.equal(9, #daily_file_contents)
-      assert.are.equal('# ' .. today, daily_file_contents[1])
-      assert.are.equal('## Tasks', daily_file_contents[2])
-      assert.are.equal('### [[existing]]', daily_file_contents[3])
-      assert.are.equal('- Existing task', daily_file_contents[4])
-      assert.are.equal('### [[newproject]]', daily_file_contents[5]) -- New subsection before Notes
-      assert.are.equal('- New task', daily_file_contents[6])
-      assert.are.equal('', daily_file_contents[7]) -- Proper spacing before next section
-      assert.are.equal('## Notes', daily_file_contents[8])
-      assert.are.equal('Some notes here', daily_file_contents[9])
+      local expected_content = {
+        '# ' .. today,
+        '## Tasks',
+        '### [[existing]]',
+        '- Existing task',
+        '### [[newproject]]',  -- New subsection before Notes
+        '- New task',
+        '',  -- Proper spacing before next section
+        '## Notes',
+        'Some notes here'
+      }
+      assert.are.same(expected_content, daily_file_contents)
     end)
 
     it('adds task at end of existing subsection without extra spacing', function()
@@ -146,16 +152,57 @@ describe('NotesMoveToToday spacing improvements', function()
 
       -- Then
       local daily_file_contents = vim.fn.readfile(tempfile_path)
-      assert.are.equal(9, #daily_file_contents)
-      assert.are.equal('# ' .. today, daily_file_contents[1])
-      assert.are.equal('## Tasks', daily_file_contents[2])
-      assert.are.equal('### [[project]]', daily_file_contents[3])
-      assert.are.equal('- First task', daily_file_contents[4])
-      assert.are.equal('- Second task', daily_file_contents[5])
-      assert.are.equal('- Additional task', daily_file_contents[6]) -- Added without extra spacing
-      assert.are.equal('', daily_file_contents[7]) -- Existing spacing preserved
-      assert.are.equal('## Notes', daily_file_contents[8])
-      assert.are.equal('Some notes', daily_file_contents[9])
+      local expected_content = {
+        '# ' .. today,
+        '## Tasks',
+        '### [[project]]',
+        '- First task',
+        '- Second task',
+        '- Additional task',  -- Added without extra spacing
+        '',  -- Existing spacing preserved
+        '## Notes',
+        'Some notes'
+      }
+      assert.are.same(expected_content, daily_file_contents)
+    end)
+
+    it('handles empty lines between subsection header and first item correctly', function()
+      -- Given
+      helpers.set_buffer_content('- New task')
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- Create daily file with subsection that has empty lines after header
+      local daily_file = 'daily/' .. today .. '.md'
+      vim.fn.mkdir('daily', 'p')
+      vim.fn.writefile({
+        '# ' .. today,
+        '## Tasks',
+        '### [[project]]',
+        '',  -- Empty line after subsection header
+        '- Existing task',
+        '',
+        '## Notes',
+        'Some notes'
+      }, daily_file)
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then
+      local daily_file_contents = vim.fn.readfile(tempfile_path)
+      local expected_content = {
+        '# ' .. today,
+        '## Tasks',
+        '### [[project]]',
+        '',  -- Empty line preserved after subsection header
+        '- Existing task',
+        '- New task',  -- Added after the existing task, not after the empty line
+        '',
+        '## Notes',
+        'Some notes'
+      }
+      assert.are.same(expected_content, daily_file_contents)
     end)
   end)
 
@@ -171,10 +218,12 @@ describe('NotesMoveToToday spacing improvements', function()
 
       -- Then
       local daily_file_contents = vim.fn.readfile(tempfile_path)
-      assert.are.equal(3, #daily_file_contents)
-      assert.are.equal('## Tasks', daily_file_contents[1])
-      assert.are.equal('### [[project]]', daily_file_contents[2])
-      assert.are.equal('- First task', daily_file_contents[3])
+      local expected_content = {
+        '## Tasks',
+        '### [[project]]',
+        '- First task'
+      }
+      assert.are.same(expected_content, daily_file_contents)
     end)
 
     it('handles file with only header correctly', function()
@@ -193,12 +242,14 @@ describe('NotesMoveToToday spacing improvements', function()
 
       -- Then
       local daily_file_contents = vim.fn.readfile(tempfile_path)
-      assert.are.equal(5, #daily_file_contents)
-      assert.are.equal('# ' .. today, daily_file_contents[1])
-      assert.are.equal('', daily_file_contents[2]) -- Empty line after header
-      assert.are.equal('## Tasks', daily_file_contents[3])
-      assert.are.equal('### [[project]]', daily_file_contents[4])
-      assert.are.equal('- Task for file with header only', daily_file_contents[5])
+      local expected_content = {
+        '# ' .. today,
+        '',  -- Empty line after header
+        '## Tasks',
+        '### [[project]]',
+        '- Task for file with header only'
+      }
+      assert.are.same(expected_content, daily_file_contents)
     end)
   end)
 end)
