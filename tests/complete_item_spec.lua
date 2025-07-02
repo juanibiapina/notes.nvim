@@ -36,10 +36,10 @@ describe('NotesMoveToToday', function()
     -- Check if the item has been moved to the daily file with proper structure
     local expected_content = {
       '## Tasks',
-      '',  -- Empty line after Tasks header
+      '', -- Empty line after Tasks header
       '### [[notes]]',
-      '',  -- Empty line after subsection header
-      '- Lua function todo item'
+      '', -- Empty line after subsection header
+      '- Lua function todo item',
     }
     assert.are.same(expected_content, daily_file_contents)
   end)
@@ -76,12 +76,12 @@ describe('NotesMoveToToday', function()
     local expected_content = {
       '# ' .. today,
       '- Existing item',
-      '',  -- Empty line before Tasks section
+      '', -- Empty line before Tasks section
       '## Tasks',
-      '',  -- Empty line after Tasks header
+      '', -- Empty line after Tasks header
       '### [[source]]',
-      '',  -- Empty line after subsection header
-      '- Item to move'
+      '', -- Empty line after subsection header
+      '- Item to move',
     }
     assert.are.same(expected_content, refreshed_content)
 
@@ -111,12 +111,12 @@ describe('NotesMoveToToday', function()
       '',
       '## Journal',
       'Some journal entry',
-      '',  -- Empty line before new Tasks section
+      '', -- Empty line before new Tasks section
       '## Tasks',
-      '',  -- Empty line after Tasks header
+      '', -- Empty line after Tasks header
       '### [[project]]',
-      '',  -- Empty line after subsection header
-      '- New task from project'
+      '', -- Empty line after subsection header
+      '- New task from project',
     }
     assert.are.same(expected_content, daily_file_contents)
   end)
@@ -145,12 +145,12 @@ describe('NotesMoveToToday', function()
     local expected_content = {
       '# ' .. today,
       '## Tasks',
-      '',  -- Empty line after Tasks header
+      '', -- Empty line after Tasks header
       '### [[existing]]',
       '- Existing task',
       '### [[another]]',
-      '',  -- Empty line after subsection header
-      '- Task from another project'
+      '', -- Empty line after subsection header
+      '- Task from another project',
     }
     assert.are.same(expected_content, daily_file_contents)
   end)
@@ -183,7 +183,7 @@ describe('NotesMoveToToday', function()
       '### [[myproject]]',
       '- First task from project',
       '- Another existing task',
-      '- Second task from same project'
+      '- Second task from same project',
     }
     assert.are.same(expected_content, daily_file_contents)
   end)

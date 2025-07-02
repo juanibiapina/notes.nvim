@@ -84,14 +84,7 @@ local function needs_empty_line_before(content, index)
   return prev_line ~= '' -- Only need empty line if previous line is not empty
 end
 
--- Helper function to check if we need an empty line after adding new content  
-local function needs_empty_line_after(content, index)
-  if index > #content then
-    return false -- No need for empty line at the end
-  end
-  local next_line = content[index]
-  return next_line ~= '' -- Only need empty line if next line is not empty
-end
+-- Helper function to check if we need an empty line before adding new content
 
 -- Appends text to daily file under structured sections: ## Tasks > ### [[note_name]]
 local function append_to_structured_daily_file(filename, text, note_name)
@@ -125,15 +118,14 @@ local function append_to_structured_daily_file(filename, text, note_name)
   -- If no Tasks section exists, create it at the end with proper spacing
   if not tasks_section_index then
     local insert_index = #content + 1
-    
+
     -- Add empty line before Tasks section if needed
     if needs_empty_line_before(content, insert_index) then
       table.insert(content, '')
       insert_index = insert_index + 1
     end
-    
     table.insert(content, '## Tasks')
-    table.insert(content, '')  -- Empty line after Tasks header
+    table.insert(content, '') -- Empty line after Tasks header
     tasks_section_index = insert_index
   else
     -- Tasks section exists - add empty line after header if we're creating a new subsection
@@ -153,14 +145,13 @@ local function append_to_structured_daily_file(filename, text, note_name)
         break
       end
     end
-    
+
     -- If there's an empty line before the next section, insert before that empty line
     if insert_index > 1 and insert_index <= #content and content[insert_index - 1] == '' then
       insert_index = insert_index - 1
     end
-    
     table.insert(content, insert_index, note_section_header)
-    table.insert(content, insert_index + 1, '')  -- Empty line after subsection header
+    table.insert(content, insert_index + 1, '') -- Empty line after subsection header
     note_section_index = insert_index
   end
 
@@ -172,7 +163,7 @@ local function append_to_structured_daily_file(filename, text, note_name)
       break
     end
   end
-  
+
   -- If there's an empty line before the next section, insert before that empty line
   if append_index > 1 and append_index <= #content and content[append_index - 1] == '' then
     append_index = append_index - 1
