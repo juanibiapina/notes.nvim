@@ -47,7 +47,7 @@ describe('Note Class', function()
       helpers.create_test_file(note_name .. '.md', table.concat(file_content, '\n'))
       local note = Note:new(note_name)
       local content = note:get_content()
-      assert.deep_equal(file_content, content)
+      assert.are.same(file_content, content)
     end)
   end)
 
@@ -60,7 +60,7 @@ describe('Note Class', function()
 
       assert.is_true(note:exists())
       local written_content = vim.fn.readfile(note:path())
-      assert.deep_equal(lines_to_write, written_content)
+      assert.are.same(lines_to_write, written_content)
     end)
 
     it('should overwrite content of an existing file', function()
@@ -72,7 +72,7 @@ describe('Note Class', function()
       note:write_content(new_lines)
 
       local written_content = vim.fn.readfile(note:path())
-      assert.deep_equal(new_lines, written_content)
+      assert.are.same(new_lines, written_content)
     end)
   end)
 
@@ -124,7 +124,6 @@ describe('Note Class', function()
       local note_name = 'SetHeaderNewFile'
       local note = Note:new(note_name)
       note:set_header() -- Uses note.name by default
-
       local content = note:get_content()
       assert.are.equal(1, #content)
       assert.are.equal('# ' .. note_name, content[1])
@@ -135,7 +134,6 @@ describe('Note Class', function()
       local header_text = 'My Custom Header for New File'
       local note = Note:new(note_name)
       note:set_header(header_text)
-
       local content = note:get_content()
       assert.are.equal(1, #content)
       assert.are.equal('# ' .. header_text, content[1])
@@ -198,12 +196,11 @@ describe('Note Class', function()
       local note_name = 'CreateWithHeaderExistsTest'
       local initial_content = { '# ' .. note_name, 'Existing line' }
       helpers.create_test_file(note_name .. '.md', table.concat(initial_content, '\n'))
-
       local note = Note:new(note_name)
       note:create_with_header()
 
       local content = note:get_content()
-      assert.deep_equal(initial_content, content, "Content should not change if file exists")
+      assert.are.same(initial_content, content, 'Content should not change if file exists')
     end)
   end)
 end)

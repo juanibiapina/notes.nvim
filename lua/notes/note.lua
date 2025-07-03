@@ -60,11 +60,15 @@ function Note:set_header(name_for_header)
   local content = self:get_content()
   local new_header_line = '# ' .. header_name
 
-  if #content > 0 and content[1]:match('^# ') then
-    -- Update existing header
+  if #content == 1 and content[1] == '' then
+    -- File contains a single empty line, overwrite it with the header.
+    content = { new_header_line }
+  elseif #content > 0 and content[1]:match('^# ') then
+    -- Content exists and first line is already a header, update it.
     content[1] = new_header_line
   else
-    -- Prepend new header
+    -- Content is either truly empty ({}), or has content that doesn't start with a header.
+    -- Prepend the new header.
     table.insert(content, 1, new_header_line)
   end
   self:write_content(content)

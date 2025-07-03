@@ -455,7 +455,7 @@ function M.notes_rename(new_name)
       else
         -- This implies get_header found a header but content_to_write is empty.
         -- Should be rare. Defensively set content to just the new header.
-        content_to_write = {'# ' .. new_name}
+        content_to_write = { '# ' .. new_name }
       end
     elseif #content_to_write > 0 and (not old_header_text or not content_to_write[1]:match('^# ')) then
       -- Content exists, but no header or first line isn't a standard header.
@@ -463,13 +463,13 @@ function M.notes_rename(new_name)
       table.insert(content_to_write, 1, '# ' .. new_name)
     elseif #content_to_write == 0 then
       -- Old note existed but was empty. New note gets a header.
-      content_to_write = {'# ' .. new_name}
+      content_to_write = { '# ' .. new_name }
     end
     -- Case: old_header_text exists but old_header_text ~= current_name.
     -- The content (including its existing, different header) is carried over as is.
   else
     -- Old note doesn't exist. New note starts with its own header.
-    content_to_write = {'# ' .. new_name}
+    content_to_write = { '# ' .. new_name }
   end
 
   new_note:write_content(content_to_write)
