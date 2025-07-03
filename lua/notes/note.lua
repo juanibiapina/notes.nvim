@@ -3,16 +3,11 @@ local Note = {}
 Note.__index = Note
 
 function Note:new(name)
-  if type(self) == 'string' then
-    name = self
-    self = Note -- luacheck: ignore
-  end
-
   local obj = {
     name = name,
   }
 
-  setmetatable(obj, Note)
+  setmetatable(obj, self)
   return obj
 end
 
