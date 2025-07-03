@@ -23,7 +23,7 @@ function Note:exists()
   return vim.fn.filereadable(self:path()) == 1
 end
 
-function Note:create_with_header()
+function Note:create()
   if not self:exists() then
     local header = '# ' .. self:name()
     vim.fn.writefile({ header }, self:path())

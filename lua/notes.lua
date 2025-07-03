@@ -17,10 +17,9 @@ local function is_complete_task(line)
 end
 
 -- Open a note by reference
--- Creates file with header if it doesn't exist
 function M.notes_open(reference)
   local note = Note:new(reference)
-  note:create_with_header()
+  note:create()
   vim.cmd('edit ' .. note:path())
 end
 
