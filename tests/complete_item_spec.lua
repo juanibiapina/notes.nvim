@@ -34,9 +34,14 @@ describe('NotesMoveToToday', function()
     local daily_file_contents = vim.fn.readfile(tempfile_path)
 
     -- Check if the item has been moved to the daily file with proper structure
-    assert.are.equal('## Tasks', daily_file_contents[1])
-    assert.are.equal('### [[notes]]', daily_file_contents[2])
-    assert.are.equal('- Lua function todo item', daily_file_contents[3])
+    local expected_content = {
+      '## Tasks',
+      '', -- Empty line after Tasks header
+      '### [[notes]]',
+      '', -- Empty line after subsection header
+      '- Lua function todo item',
+    }
+    assert.are.same(expected_content, daily_file_contents)
   end)
 
   it('refreshes daily buffer when it is open in a split window', function()
@@ -68,12 +73,17 @@ describe('NotesMoveToToday', function()
 
     -- Then - The daily buffer should be refreshed with the new structured content
     local refreshed_content = vim.api.nvim_buf_get_lines(daily_buf, 0, -1, false)
-    assert.are.equal(5, #refreshed_content)
-    assert.are.equal('# ' .. today, refreshed_content[1])
-    assert.are.equal('- Existing item', refreshed_content[2])
-    assert.are.equal('## Tasks', refreshed_content[3])
-    assert.are.equal('### [[source]]', refreshed_content[4])
-    assert.are.equal('- Item to move', refreshed_content[5])
+    local expected_content = {
+      '# ' .. today,
+      '- Existing item',
+      '', -- Empty line before Tasks section
+      '## Tasks',
+      '', -- Empty line after Tasks header
+      '### [[source]]',
+      '', -- Empty line after subsection header
+      '- Item to move',
+    }
+    assert.are.same(expected_content, refreshed_content)
 
     -- And the original line should be deleted
     local new_current_line = vim.fn.getline(1)
@@ -96,14 +106,19 @@ describe('NotesMoveToToday', function()
 
     -- Then
     local daily_file_contents = vim.fn.readfile(tempfile_path)
-    assert.are.equal(7, #daily_file_contents)
-    assert.are.equal('# ' .. today, daily_file_contents[1])
-    assert.are.equal('', daily_file_contents[2])
-    assert.are.equal('## Journal', daily_file_contents[3])
-    assert.are.equal('Some journal entry', daily_file_contents[4])
-    assert.are.equal('## Tasks', daily_file_contents[5])
-    assert.are.equal('### [[project]]', daily_file_contents[6])
-    assert.are.equal('- New task from project', daily_file_contents[7])
+    local expected_content = {
+      '# ' .. today,
+      '',
+      '## Journal',
+      'Some journal entry',
+      '', -- Empty line before new Tasks section
+      '## Tasks',
+      '', -- Empty line after Tasks header
+      '### [[project]]',
+      '', -- Empty line after subsection header
+      '- New task from project',
+    }
+    assert.are.same(expected_content, daily_file_contents)
   end)
 
   it('creates note subsection when Tasks section exists but note subsection does not', function()
@@ -127,13 +142,17 @@ describe('NotesMoveToToday', function()
 
     -- Then
     local daily_file_contents = vim.fn.readfile(tempfile_path)
-    assert.are.equal(6, #daily_file_contents)
-    assert.are.equal('# ' .. today, daily_file_contents[1])
-    assert.are.equal('## Tasks', daily_file_contents[2])
-    assert.are.equal('### [[existing]]', daily_file_contents[3])
-    assert.are.equal('- Existing task', daily_file_contents[4])
-    assert.are.equal('### [[another]]', daily_file_contents[5])
-    assert.are.equal('- Task from another project', daily_file_contents[6])
+    local expected_content = {
+      '# ' .. today,
+      '## Tasks',
+      '', -- Empty line after Tasks header
+      '### [[existing]]',
+      '- Existing task',
+      '### [[another]]',
+      '', -- Empty line after subsection header
+      '- Task from another project',
+    }
+    assert.are.same(expected_content, daily_file_contents)
   end)
 
   it('adds to existing note subsection with existing tasks', function()
@@ -158,12 +177,14 @@ describe('NotesMoveToToday', function()
 
     -- Then
     local daily_file_contents = vim.fn.readfile(tempfile_path)
-    assert.are.equal(6, #daily_file_contents)
-    assert.are.equal('# ' .. today, daily_file_contents[1])
-    assert.are.equal('## Tasks', daily_file_contents[2])
-    assert.are.equal('### [[myproject]]', daily_file_contents[3])
-    assert.are.equal('- First task from project', daily_file_contents[4])
-    assert.are.equal('- Another existing task', daily_file_contents[5])
-    assert.are.equal('- Second task from same project', daily_file_contents[6])
+    local expected_content = {
+      '# ' .. today,
+      '## Tasks',
+      '### [[myproject]]',
+      '- First task from project',
+      '- Another existing task',
+      '- Second task from same project',
+    }
+    assert.are.same(expected_content, daily_file_contents)
   end)
 end)
