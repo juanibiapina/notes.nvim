@@ -123,6 +123,38 @@ describe('NotesRename command', function()
     assert.are.equal('newname.md', vim.fn.expand('%:t'))
   end)
 
+  it('renames an empty file correctly (remains empty, no new header)', function()
+    helpers.create_test_file('empty_original.md', '')
+    vim.cmd('edit empty_original.md')
+    require('notes').notes_rename('empty_renamed')
+
+    assert.are.equal('empty_renamed.md', vim.fn.expand('%:t'))
+    local content = vim.fn.readfile('empty_renamed.md')
+    -- If the file was truly empty, readfile might return an empty table or a table with one empty string.
+    -- Let's assert it's not nil and then check for emptiness.
+    assert.is_not_nil(content)
+    if #content == 1 then
+      assert.are.equal('', content[1]) -- Allow for one empty line, which is how vim often saves "empty"
+    else
+      assert.are.equal(0, #content) -- Or truly zero lines
+    end
+    -- Crucially, no header should have been added.
+    if #content > 0 then
+      assert.is_nil(content[1]:match('^# ')) -- A non-match returns nil, not false
+    end
+  end)
+
+  it('renames a file with content but no header (preserves content, no new header)', function()
+    local original_file_content = { 'Line one.', 'Line two.' }
+    helpers.create_test_file('no_header_original.md', table.concat(original_file_content, '\n'))
+    vim.cmd('edit no_header_original.md')
+    require('notes').notes_rename('no_header_renamed')
+
+    assert.are.equal('no_header_renamed.md', vim.fn.expand('%:t'))
+    local new_content = vim.fn.readfile('no_header_renamed.md')
+    assert.are.same(original_file_content, new_content)
+  end)
+
   -- Tests for reference functionality (requires ripgrep)
   describe('with reference updating', function()
     it('finds and updates single reference in another file', function()

@@ -438,19 +438,33 @@ function M.notes_rename(new_name)
   -- Find all references before renaming
   local references = M.find_references(current_name)
 
-  -- Read current file content
-  local content = vim.fn.readfile(current_file)
+  local old_note = Note:new(current_name) -- Exists on disk due to prior checks
+  local new_note = Note:new(new_name) -- Does not exist on disk due to prior checks
 
-  -- Update header if it matches the current filename
-  if #content > 0 and content[1] == '# ' .. current_name then
-    content[1] = '# ' .. new_name
+  -- Get content from old_note (this will lazy-load into old_note._content)
+  local old_content_table = old_note:get_content()
+
+  -- Set this content for the new_note (copies it into new_note._content, marks new_note as dirty)
+  new_note:set_content(old_content_table)
+
+  -- Conditionally modify the header in new_note's in-memory content.
+  -- We operate on new_note's content. If the first line (which came from old_note)
+  -- was a header matching current_name, we want to change it to new_name.
+  -- The get_content() here ensures we have the reference to new_note's internal table,
+  -- though set_header will call it again if it wasn't already populated.
+  local new_note_memory_content = new_note:get_content()
+  if #new_note_memory_content > 0 and new_note_memory_content[1] == '# ' .. current_name then
+    -- Modify the header of new_note's in-memory content to reflect the new name.
+    -- set_header will operate on new_note._content and ensure _is_dirty is true.
+    new_note:set_header(new_name)
   end
+  -- If the header didn't match (custom header) or no header, new_note's content is already correct.
 
-  -- Write content to new file
-  vim.fn.writefile(content, new_file_path)
+  -- Write the new_note's content (which is now prepared) to disk.
+  new_note:write()
 
-  -- Delete old file
-  vim.fn.delete(current_file)
+  -- Delete the old_note file from disk using the new Note method.
+  old_note:delete_from_disk()
 
   -- Update all references
   for _, ref in ipairs(references) do
@@ -514,16 +528,22 @@ function M.notes_remove()
     return
   end
 
-  -- Close the buffer
-  vim.cmd('bdelete!')
+  local note_to_remove = Note:new(current_name)
 
-  -- Remove the file if it exists
-  local file_exists = vim.fn.filereadable(current_file) == 1
-  if file_exists then
-    vim.fn.delete(current_file)
+  -- Attempt to delete the note file from disk
+  local deletion_successful = note_to_remove:delete_from_disk()
+
+  if deletion_successful then
+    -- Close the buffer only after successful deletion from disk (or if it never existed)
+    -- It's important to use 'bdelete!' to ensure the buffer is closed without saving,
+    -- especially if it was the file we just deleted.
+    vim.cmd('bdelete!')
+    print('Removed note "' .. current_name .. '"')
+  else
+    -- This case implies vim.fn.delete() failed, which is rare for existing files
+    -- unless there are permission issues.
+    print('Error: Could not delete note file for "' .. current_name .. '".')
   end
-
-  print('Removed note "' .. current_name .. '"')
 end
 
 -- Wrap the word under cursor in [[ ]] to make it a link
