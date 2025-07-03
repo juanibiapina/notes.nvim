@@ -16,10 +16,10 @@ local function is_complete_task(line)
   return line:match('^%s*-%s+%[x%]') ~= nil
 end
 
--- Open a note by name
+-- Open a note by reference
 -- Creates file with header if it doesn't exist
-function M.notes_open(name)
-  local note = Note:new(name)
+function M.notes_open(reference)
+  local note = Note:new(reference)
   note:create_with_header()
   vim.cmd('edit ' .. note:path())
 end
