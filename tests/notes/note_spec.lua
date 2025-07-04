@@ -21,11 +21,7 @@ describe('Note', function()
 
         -- then
         assert.is_true(note:exists())
-
-        -- check file content
-        local content = vim.fn.readfile(note:path())
-        assert.are.equal('# test_note', content[1])
-        assert.are.equal(1, #content)
+        helpers.assert_file_content(note:path(), '# test_note')
       end)
     end)
 
@@ -38,8 +34,7 @@ describe('Note', function()
         note:touch()
 
         -- then
-        local content = vim.fn.readfile(note:path())
-        assert.are.equal('# simple', content[1])
+        helpers.assert_file_content(note:path(), '# simple')
       end)
     end)
 
@@ -53,8 +48,7 @@ describe('Note', function()
         note:touch()
 
         -- then
-        local content = vim.fn.readfile(note:path())
-        assert.are.equal('# deep_note', content[1])
+        helpers.assert_file_content(note:path(), '# deep_note')
       end)
     end)
   end)

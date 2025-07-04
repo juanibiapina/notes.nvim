@@ -88,4 +88,11 @@ function M.create_test_file(filename, content)
   vim.fn.writefile(lines, filename)
 end
 
+-- Helper function to assert file content matches expected string
+function M.assert_file_content(filepath, expected_content)
+  local file_lines = vim.fn.readfile(filepath)
+  local actual_content = table.concat(file_lines, '\n')
+  assert.are.equal(expected_content, actual_content)
+end
+
 return M

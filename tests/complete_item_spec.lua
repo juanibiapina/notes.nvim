@@ -31,17 +31,17 @@ describe('NotesMoveToToday', function()
 
     -- Read the contents of the daily file
     assert.are.equal(1, vim.fn.filereadable(tempfile_path))
-    local daily_file_contents = vim.fn.readfile(tempfile_path)
 
     -- Check if the item has been moved to the daily file with proper structure
-    local expected_content = {
-      '## Tasks',
-      '', -- Empty line after Tasks header
-      '### [[notes]]',
-      '', -- Empty line after subsection header
-      '- Lua function todo item',
-    }
-    assert.are.same(expected_content, daily_file_contents)
+    helpers.assert_file_content(
+      tempfile_path,
+      [=[
+## Tasks
+
+### [[notes]]
+
+- Lua function todo item]=]
+    )
   end)
 
   it('refreshes daily buffer when it is open in a split window', function()
@@ -105,20 +105,16 @@ describe('NotesMoveToToday', function()
     require('notes').move_to_today()
 
     -- Then
-    local daily_file_contents = vim.fn.readfile(tempfile_path)
-    local expected_content = {
-      '# ' .. today,
-      '',
-      '## Journal',
-      'Some journal entry',
-      '', -- Empty line before new Tasks section
-      '## Tasks',
-      '', -- Empty line after Tasks header
-      '### [[project]]',
-      '', -- Empty line after subsection header
-      '- New task from project',
-    }
-    assert.are.same(expected_content, daily_file_contents)
+    helpers.assert_file_content(tempfile_path, '# ' .. today .. '\n' .. [=[
+
+## Journal
+Some journal entry
+
+## Tasks
+
+### [[project]]
+
+- New task from project]=])
   end)
 
   it('creates note subsection when Tasks section exists but note subsection does not', function()
@@ -141,18 +137,14 @@ describe('NotesMoveToToday', function()
     require('notes').move_to_today()
 
     -- Then
-    local daily_file_contents = vim.fn.readfile(tempfile_path)
-    local expected_content = {
-      '# ' .. today,
-      '## Tasks',
-      '', -- Empty line after Tasks header
-      '### [[existing]]',
-      '- Existing task',
-      '### [[another]]',
-      '', -- Empty line after subsection header
-      '- Task from another project',
-    }
-    assert.are.same(expected_content, daily_file_contents)
+    helpers.assert_file_content(tempfile_path, '# ' .. today .. '\n' .. [=[
+## Tasks
+
+### [[existing]]
+- Existing task
+### [[another]]
+
+- Task from another project]=])
   end)
 
   it('adds to existing note subsection with existing tasks', function()
@@ -176,15 +168,11 @@ describe('NotesMoveToToday', function()
     require('notes').move_to_today()
 
     -- Then
-    local daily_file_contents = vim.fn.readfile(tempfile_path)
-    local expected_content = {
-      '# ' .. today,
-      '## Tasks',
-      '### [[myproject]]',
-      '- First task from project',
-      '- Another existing task',
-      '- Second task from same project',
-    }
-    assert.are.same(expected_content, daily_file_contents)
+    helpers.assert_file_content(tempfile_path, '# ' .. today .. '\n' .. [=[
+## Tasks
+### [[myproject]]
+- First task from project
+- Another existing task
+- Second task from same project]=])
   end)
 end)
