@@ -10,14 +10,14 @@ describe('Note', function()
     helpers.teardown_test_env()
   end)
 
-  describe(':create', function()
+  describe(':touch', function()
     describe('not doesn not exist', function()
-      it('creates a new note', function()
+      it('creates a new note with header', function()
         -- given
         local note = Note:new('test_note')
 
         -- when
-        note:create()
+        note:touch()
 
         -- then
         assert.is_true(note:exists())
@@ -35,7 +35,7 @@ describe('Note', function()
         local note = Note:new('simple')
 
         -- when
-        note:create()
+        note:touch()
 
         -- then
         local content = vim.fn.readfile(note:path())
@@ -50,7 +50,7 @@ describe('Note', function()
         local note = Note:new('folder/subfolder/deep_note')
 
         -- when
-        note:create()
+        note:touch()
 
         -- then
         local content = vim.fn.readfile(note:path())

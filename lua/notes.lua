@@ -19,7 +19,7 @@ end
 -- Open a note by reference
 function M.notes_open(reference)
   local note = Note:new(reference)
-  note:create()
+  note:touch()
   vim.cmd('edit ' .. note:path())
 end
 
