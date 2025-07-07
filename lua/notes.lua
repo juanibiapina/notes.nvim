@@ -4,7 +4,7 @@ local Note = require('notes.note')
 local M = {}
 
 -- Helper function to calculate previous day's date
-local function get_previous_day_date()
+function M.get_previous_day_date()
   local current_time = os.time()
   local previous_time = current_time - 86400 -- Subtract 24 hours (86400 seconds)
   return os.date('%Y-%m-%d', previous_time)
@@ -239,7 +239,7 @@ end
 -- Opens previous day's daily file under the format daily/YYYY-MM-DD.md
 -- This format is compatible with Obsidian daily notes
 function M.daily_previous()
-  local previous_day = get_previous_day_date()
+  local previous_day = M.get_previous_day_date()
   local daily_reference = 'daily/' .. previous_day
 
   -- Create the daily directory if it doesn't exist
@@ -625,8 +625,5 @@ function M.notes_link()
   local line_num = vim.fn.line('.')
   vim.fn.setline(line_num, new_line)
 end
-
--- Export helper function for testing
-M.get_previous_day_date = get_previous_day_date
 
 return M

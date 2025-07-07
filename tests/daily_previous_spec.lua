@@ -7,7 +7,7 @@ describe('NotesDailyPrevious', function()
   before_each(function()
     helpers.setup_test_env()
 
-    yesterday = helpers.get_yesterday_date()
+    yesterday = require('notes').get_previous_day_date()
     daily_file_path = helpers.get_temp_dir() .. '/daily/' .. yesterday .. '.md'
   end)
 
