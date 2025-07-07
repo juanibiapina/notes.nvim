@@ -69,9 +69,7 @@ end
 
 -- Helper function to get yesterday's date string
 function M.get_yesterday_date()
-  local current_time = os.time()
-  local previous_time = current_time - 86400 -- Subtract 24 hours (86400 seconds)
-  return os.date('%Y-%m-%d', previous_time)
+  return require('notes').get_previous_day_date()
 end
 
 -- Helper function to get current temp directory
