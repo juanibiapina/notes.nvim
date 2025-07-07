@@ -23,8 +23,8 @@ local function get_previous_day_from_date(date_str)
   if not year or not month or not day then
     return nil
   end
-  
-  local date_time = os.time({year = tonumber(year), month = tonumber(month), day = tonumber(day)})
+
+  local date_time = os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
   local previous_time = date_time - 86400 -- Subtract 24 hours (86400 seconds)
   return os.date('%Y-%m-%d', previous_time)
 end
@@ -35,8 +35,8 @@ local function get_next_day_from_date(date_str)
   if not year or not month or not day then
     return nil
   end
-  
-  local date_time = os.time({year = tonumber(year), month = tonumber(month), day = tonumber(day)})
+
+  local date_time = os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
   local next_time = date_time + 86400 -- Add 24 hours (86400 seconds)
   return os.date('%Y-%m-%d', next_time)
 end
@@ -46,13 +46,13 @@ end
 local function get_current_daily_note_date()
   local current_file = vim.fn.expand('%:p')
   local filename = vim.fn.expand('%:t:r') -- filename without extension
-  
+
   -- Check if we're in a daily note by matching the pattern
   -- The file should be in a 'daily' directory and have a YYYY-MM-DD format name
   if current_file:match('/daily/') and filename:match('^%d%d%d%d%-%d%d%-%d%d$') then
     return filename
   end
-  
+
   return nil
 end
 
@@ -289,7 +289,7 @@ end
 function M.daily_previous()
   local current_daily_date = get_current_daily_note_date()
   local previous_day
-  
+
   if current_daily_date then
     -- We're in a daily note, so get previous day relative to current note
     previous_day = get_previous_day_from_date(current_daily_date)
@@ -297,7 +297,7 @@ function M.daily_previous()
     -- We're not in a daily note, so get previous day relative to today
     previous_day = M.get_previous_day_date()
   end
-  
+
   local daily_reference = 'daily/' .. previous_day
 
   -- Create the daily directory if it doesn't exist
@@ -317,7 +317,7 @@ end
 function M.daily_next()
   local current_daily_date = get_current_daily_note_date()
   local next_day
-  
+
   if current_daily_date then
     -- We're in a daily note, so get next day relative to current note
     next_day = get_next_day_from_date(current_daily_date)
@@ -325,7 +325,7 @@ function M.daily_next()
     -- We're not in a daily note, so get next day relative to today
     next_day = M.get_next_day_date()
   end
-  
+
   local daily_reference = 'daily/' .. next_day
 
   -- Create the daily directory if it doesn't exist

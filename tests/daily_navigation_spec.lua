@@ -79,7 +79,7 @@ describe('Daily Navigation', function()
       vim.fn.mkdir(helpers.get_temp_dir() .. '/daily', 'p')
       local current_daily_path = helpers.get_temp_dir() .. '/daily/' .. current_date .. '.md'
       vim.fn.writefile({ '# ' .. current_date }, current_daily_path)
-      
+
       -- Open the daily note to make it current
       vim.cmd('edit ' .. current_daily_path)
 
@@ -174,7 +174,7 @@ describe('Daily Navigation', function()
       vim.fn.mkdir(helpers.get_temp_dir() .. '/daily', 'p')
       local current_daily_path = helpers.get_temp_dir() .. '/daily/' .. current_date .. '.md'
       vim.fn.writefile({ '# ' .. current_date }, current_daily_path)
-      
+
       -- Open the daily note to make it current
       vim.cmd('edit ' .. current_daily_path)
 
