@@ -17,6 +17,45 @@ function M.get_next_day_date()
   return os.date('%Y-%m-%d', next_time)
 end
 
+-- Helper function to calculate previous day's date from a given date
+local function get_previous_day_from_date(date_str)
+  local year, month, day = date_str:match('(%d%d%d%d)-(%d%d)-(%d%d)')
+  if not year or not month or not day then
+    return nil
+  end
+  
+  local date_time = os.time({year = tonumber(year), month = tonumber(month), day = tonumber(day)})
+  local previous_time = date_time - 86400 -- Subtract 24 hours (86400 seconds)
+  return os.date('%Y-%m-%d', previous_time)
+end
+
+-- Helper function to calculate next day's date from a given date
+local function get_next_day_from_date(date_str)
+  local year, month, day = date_str:match('(%d%d%d%d)-(%d%d)-(%d%d)')
+  if not year or not month or not day then
+    return nil
+  end
+  
+  local date_time = os.time({year = tonumber(year), month = tonumber(month), day = tonumber(day)})
+  local next_time = date_time + 86400 -- Add 24 hours (86400 seconds)
+  return os.date('%Y-%m-%d', next_time)
+end
+
+-- Helper function to check if current file is a daily note and extract its date
+-- Returns the date string if it's a daily note, nil otherwise
+local function get_current_daily_note_date()
+  local current_file = vim.fn.expand('%:p')
+  local filename = vim.fn.expand('%:t:r') -- filename without extension
+  
+  -- Check if we're in a daily note by matching the pattern
+  -- The file should be in a 'daily' directory and have a YYYY-MM-DD format name
+  if current_file:match('/daily/') and filename:match('^%d%d%d%d%-%d%d%-%d%d$') then
+    return filename
+  end
+  
+  return nil
+end
+
 -- Helper functions for line analysis
 local function is_task_line(line)
   return line:match('^%s*-%s+%[[ x]%]') ~= nil
@@ -245,8 +284,20 @@ end
 
 -- Opens previous day's daily file under the format daily/YYYY-MM-DD.md
 -- This format is compatible with Obsidian daily notes
+-- If current note is a daily note, goes to previous day relative to current note
+-- If current note is not a daily note, goes to previous day relative to today
 function M.daily_previous()
-  local previous_day = M.get_previous_day_date()
+  local current_daily_date = get_current_daily_note_date()
+  local previous_day
+  
+  if current_daily_date then
+    -- We're in a daily note, so get previous day relative to current note
+    previous_day = get_previous_day_from_date(current_daily_date)
+  else
+    -- We're not in a daily note, so get previous day relative to today
+    previous_day = M.get_previous_day_date()
+  end
+  
   local daily_reference = 'daily/' .. previous_day
 
   -- Create the daily directory if it doesn't exist
@@ -261,8 +312,20 @@ end
 
 -- Opens next day's daily file under the format daily/YYYY-MM-DD.md
 -- This format is compatible with Obsidian daily notes
+-- If current note is a daily note, goes to next day relative to current note
+-- If current note is not a daily note, goes to next day relative to today
 function M.daily_next()
-  local next_day = M.get_next_day_date()
+  local current_daily_date = get_current_daily_note_date()
+  local next_day
+  
+  if current_daily_date then
+    -- We're in a daily note, so get next day relative to current note
+    next_day = get_next_day_from_date(current_daily_date)
+  else
+    -- We're not in a daily note, so get next day relative to today
+    next_day = M.get_next_day_date()
+  end
+  
   local daily_reference = 'daily/' .. next_day
 
   -- Create the daily directory if it doesn't exist
