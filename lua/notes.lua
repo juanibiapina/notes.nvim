@@ -3,6 +3,13 @@ local Note = require('notes.note')
 
 local M = {}
 
+-- Helper function to calculate previous day's date
+function M.get_previous_day_date()
+  local current_time = os.time()
+  local previous_time = current_time - 86400 -- Subtract 24 hours (86400 seconds)
+  return os.date('%Y-%m-%d', previous_time)
+end
+
 -- Helper functions for line analysis
 local function is_task_line(line)
   return line:match('^%s*-%s+%[[ x]%]') ~= nil
@@ -227,6 +234,22 @@ function M.daily_today()
   end
 
   vim.cmd('edit ' .. daily_filename)
+end
+
+-- Opens previous day's daily file under the format daily/YYYY-MM-DD.md
+-- This format is compatible with Obsidian daily notes
+function M.daily_previous()
+  local previous_day = M.get_previous_day_date()
+  local daily_reference = 'daily/' .. previous_day
+
+  -- Create the daily directory if it doesn't exist
+  if vim.fn.isdirectory('daily') == 0 then
+    vim.fn.mkdir('daily', 'p')
+  end
+
+  local note = Note:new(daily_reference)
+  note:touch()
+  vim.cmd('edit ' .. note:path())
 end
 
 -- Creates a new empty, not done task on the next line
