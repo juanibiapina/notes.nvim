@@ -67,6 +67,13 @@ function M.get_today_date()
   return os.date('%Y-%m-%d')
 end
 
+-- Helper function to get yesterday's date string
+function M.get_yesterday_date()
+  local current_time = os.time()
+  local previous_time = current_time - 86400 -- Subtract 24 hours (86400 seconds)
+  return os.date('%Y-%m-%d', previous_time)
+end
+
 -- Helper function to get current temp directory
 function M.get_temp_dir()
   return temp_dir
