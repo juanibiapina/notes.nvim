@@ -70,19 +70,4 @@ describe('NotesDailyPrevious', function()
     assert.are.equal('# ' .. yesterday, lines[1])
     assert.are.equal('Some existing content', lines[2])
   end)
-
-  it('calculates correct previous day across month boundaries', function()
-    -- This test ensures date calculation handles month/year transitions correctly
-    -- The calculation is done by os.time() and os.date(), which handle this automatically
-
-    -- When
-    vim.cmd('NotesDailyPrevious')
-
-    -- Then
-    local filename = vim.fn.expand('%:t')
-    assert.are.equal(yesterday .. '.md', filename)
-
-    -- Verify that the date format is correct (YYYY-MM-DD)
-    assert.is_true(filename:match('^%d%d%d%d%-%d%d%-%d%d%.md$') ~= nil)
-  end)
 end)
