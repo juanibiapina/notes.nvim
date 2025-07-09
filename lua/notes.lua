@@ -3,20 +3,6 @@ local Note = require('notes.note')
 
 local M = {}
 
--- Helper function to calculate previous day's date
-function M.get_previous_day_date()
-  local current_time = os.time()
-  local previous_time = current_time - 86400 -- Subtract 24 hours (86400 seconds)
-  return os.date('%Y-%m-%d', previous_time)
-end
-
--- Helper function to calculate next day's date
-function M.get_next_day_date()
-  local current_time = os.time()
-  local next_time = current_time + 86400 -- Add 24 hours (86400 seconds)
-  return os.date('%Y-%m-%d', next_time)
-end
-
 -- Helper function to calculate previous day's date from a given date
 local function get_previous_day_from_date(date_str)
   local year, month, day = date_str:match('(%d%d%d%d)-(%d%d)-(%d%d)')
@@ -39,6 +25,26 @@ local function get_next_day_from_date(date_str)
   local date_time = os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
   local next_time = date_time + 86400 -- Add 24 hours (86400 seconds)
   return os.date('%Y-%m-%d', next_time)
+end
+
+-- Helper function to get the effective date for daily notes
+-- The effective date shifts at 4 AM, so before 4 AM the effective date is the previous day
+function M.get_effective_date()
+  local current_time = os.time()
+  local shifted_time = current_time - (4 * 3600) -- Subtract 4 hours (4 * 3600 seconds)
+  return os.date('%Y-%m-%d', shifted_time)
+end
+
+-- Helper function to calculate previous day's date from effective date
+function M.get_previous_day_date()
+  local effective_date = M.get_effective_date()
+  return get_previous_day_from_date(effective_date)
+end
+
+-- Helper function to calculate next day's date from effective date
+function M.get_next_day_date()
+  local effective_date = M.get_effective_date()
+  return get_next_day_from_date(effective_date)
 end
 
 -- Helper function to check if current file is a daily note and extract its date
@@ -246,8 +252,9 @@ end
 
 -- Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
 -- This format is compatible with Obsidian daily notes
+-- Uses effective date which shifts at 4 AM (before 4 AM = previous day)
 function M.move_to_today()
-  local today = os.date('%Y-%m-%d')
+  local today = M.get_effective_date()
   local done_filename = 'daily/' .. today .. '.md'
   local current_line = vim.fn.getline('.')
   local current_note_name = vim.fn.expand('%:t:r')
@@ -264,8 +271,9 @@ end
 
 -- Opens today's daily file under the format daily/YYYY-MM-DD.md
 -- This format is compatible with Obsidian daily notes
+-- Uses effective date which shifts at 4 AM (before 4 AM = previous day)
 function M.daily_today()
-  local today = os.date('%Y-%m-%d')
+  local today = M.get_effective_date()
   local daily_filename = 'daily/' .. today .. '.md'
 
   -- Create the daily directory if it doesn't exist

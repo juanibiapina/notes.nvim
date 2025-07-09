@@ -62,9 +62,12 @@ function M.set_buffer_content(content)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end
 
--- Helper function to get current date string
+-- Helper function to get current date string using effective date
+-- This matches the behavior of the main plugin's get_effective_date()
 function M.get_today_date()
-  return os.date('%Y-%m-%d')
+  local current_time = os.time()
+  local shifted_time = current_time - (4 * 3600) -- Subtract 4 hours (4 * 3600 seconds)
+  return os.date('%Y-%m-%d', shifted_time)
 end
 
 -- Helper function to get current temp directory
