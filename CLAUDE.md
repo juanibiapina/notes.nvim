@@ -15,3 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Command Structure
 
 All commands follow the pattern: `Notes{Action}` and delegate to corresponding functions in the main module:
+
+## Development
+
+- Use `bin/ci` to run linter and tests
