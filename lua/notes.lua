@@ -208,6 +208,13 @@ local function append_to_structured_daily_file(filename, text, note_name)
     if insert_index > 1 and insert_index <= #content and content[insert_index - 1] == '' then
       insert_index = insert_index - 1
     end
+
+    -- Add blank line before subsection header if the previous line is not empty
+    if needs_empty_line_before(content, insert_index) then
+      table.insert(content, insert_index, '')
+      insert_index = insert_index + 1
+    end
+
     table.insert(content, insert_index, note_section_header)
     table.insert(content, insert_index + 1, '') -- Empty line after subsection header
     note_section_index = insert_index

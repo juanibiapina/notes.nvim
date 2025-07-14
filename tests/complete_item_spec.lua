@@ -142,6 +142,7 @@ Some journal entry
 
 ### [[existing]]
 - Existing task
+
 ### [[another]]
 
 - Task from another project]=])

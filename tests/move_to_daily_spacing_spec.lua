@@ -113,6 +113,7 @@ Some journal entry
 
 ### [[existing]]
 - Existing task
+
 ### [[newproject]]
 
 - New task
