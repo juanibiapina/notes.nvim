@@ -144,8 +144,13 @@ end
 
 -- Helper function to check if we need an empty line before adding new content
 
--- Appends text to daily file under structured sections: ## Tasks > ### [[note_name]]
-local function append_to_structured_daily_file(filename, text, note_name)
+-- Appends text lines to daily file under structured sections: ## Tasks > ### [[note_name]]
+-- text_lines can be a string (single line) or an array of strings (multiple lines)
+local function append_to_structured_daily_file(filename, text_lines, note_name)
+  -- Normalize input to always be an array
+  if type(text_lines) == 'string' then
+    text_lines = { text_lines }
+  end
   local path = Path:new(filename)
 
   -- Create file and parent directories if needed
@@ -234,8 +239,10 @@ local function append_to_structured_daily_file(filename, text, note_name)
     append_index = append_index - 1
   end
 
-  -- Insert the text
-  table.insert(content, append_index, text)
+  -- Insert all text lines
+  for i, line in ipairs(text_lines) do
+    table.insert(content, append_index + i - 1, line)
+  end
 
   -- Write all content back to file
   path:write(table.concat(content, '\n'), 'w')
@@ -257,23 +264,104 @@ local function refresh_file_buffers(filename)
   end
 end
 
+-- Returns the indentation level (number of leading spaces) of a line
+local function get_indentation_level(line)
+  local spaces = line:match('^(%s*)')
+  return #spaces
+end
+
+-- Returns an array of line numbers that are children of the given line number
+-- Children are defined as consecutive lines with greater indentation
+local function get_child_lines(start_line_num)
+  local parent_line = vim.fn.getline(start_line_num)
+  local parent_indent = get_indentation_level(parent_line)
+  local child_line_nums = {}
+
+  local current_line_num = start_line_num + 1
+  local total_lines = vim.fn.line('$')
+
+  while current_line_num <= total_lines do
+    local line = vim.fn.getline(current_line_num)
+
+    -- Handle empty lines by looking ahead
+    if line:match('^%s*$') then
+      -- Find the next non-empty line
+      local next_line_num = current_line_num + 1
+      while next_line_num <= total_lines do
+        local next_line = vim.fn.getline(next_line_num)
+        if not next_line:match('^%s*$') then
+          -- Found a non-empty line, check its indentation
+          local next_indent = get_indentation_level(next_line)
+          if next_indent <= parent_indent then
+            -- Next non-empty line is a sibling/ancestor, so stop here
+            -- Don't include this empty line or any following empty lines
+            return child_line_nums
+          end
+          -- Next non-empty line is still a child, so include this empty line
+          break
+        end
+        next_line_num = next_line_num + 1
+      end
+
+      -- If we reached end of file, don't include trailing empty lines
+      if next_line_num > total_lines then
+        return child_line_nums
+      end
+
+      -- Include this empty line as it's between children
+      table.insert(child_line_nums, current_line_num)
+      current_line_num = current_line_num + 1
+    else
+      local line_indent = get_indentation_level(line)
+
+      -- If indentation is less than or equal to parent, we've found a sibling/ancestor
+      if line_indent <= parent_indent then
+        break
+      end
+
+      -- This line has greater indentation, so it's a child
+      table.insert(child_line_nums, current_line_num)
+      current_line_num = current_line_num + 1
+    end
+  end
+
+  return child_line_nums
+end
+
 -- Moves the current line to a daily file under the format daily/YYYY-MM-DD.md
+-- If the current line has child items (indented lines), they are moved along with it
 -- This format is compatible with Obsidian daily notes
 -- Uses effective date which shifts at 4 AM (before 4 AM = previous day)
 function M.move_to_today()
   local today = M.get_effective_date()
   local done_filename = 'daily/' .. today .. '.md'
-  local current_line = vim.fn.getline('.')
+  local current_line_num = vim.fn.line('.')
   local current_note_name = vim.fn.expand('%:t:r')
 
-  -- Append the current line to the daily file under structured sections
-  append_to_structured_daily_file(done_filename, current_line, current_note_name)
+  -- Get the current line
+  local current_line = vim.fn.getline(current_line_num)
+
+  -- Get all child lines (if any)
+  local child_line_nums = get_child_lines(current_line_num)
+
+  -- Collect all lines to move (parent + children)
+  local lines_to_move = { current_line }
+  for _, line_num in ipairs(child_line_nums) do
+    table.insert(lines_to_move, vim.fn.getline(line_num))
+  end
+
+  -- Append all lines to the daily file under structured sections
+  append_to_structured_daily_file(done_filename, lines_to_move, current_note_name)
 
   -- Refresh any open buffers showing the daily file
   refresh_file_buffers(done_filename)
 
-  -- Delete the current line from the original file
-  vim.cmd('delete')
+  -- Delete all moved lines from the original file (in reverse order to preserve line numbers)
+  for i = #child_line_nums, 1, -1 do
+    vim.fn.deletebufline('%', child_line_nums[i])
+  end
+  -- Delete the parent line last
+  vim.fn.deletebufline('%', current_line_num)
 end
 
 -- Opens today's daily file under the format daily/YYYY-MM-DD.md

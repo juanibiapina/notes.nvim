@@ -176,4 +176,223 @@ Some journal entry
 - Another existing task
 - Second task from same project]=])
   end)
+
+  describe('moving parent items with children', function()
+    it('moves parent with single child item', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child task
+- Sibling task]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Parent and child should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child task]=]
+      )
+
+      -- And - Sibling should remain in original file
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Sibling task' }, remaining_content)
+    end)
+
+    it('moves parent with multiple children at same level', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child 1
+  - Child 2
+  - Child 3
+- Sibling task]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Parent and all children should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child 1
+  - Child 2
+  - Child 3]=]
+      )
+
+      -- And - Sibling should remain
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Sibling task' }, remaining_content)
+    end)
+
+    it('moves parent with nested children (multiple indentation levels)', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child level 1
+    - Child level 2
+      - Child level 3
+  - Another child level 1
+- Sibling task]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - All nested children should be moved with parent
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child level 1
+    - Child level 2
+      - Child level 3
+  - Another child level 1]=]
+      )
+
+      -- And - Sibling should remain
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Sibling task' }, remaining_content)
+    end)
+
+    it('moves parent with no children (backward compatibility)', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Task with no children
+- Another task]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Only the parent task should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Task with no children]=]
+      )
+
+      -- And - Other task should remain
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Another task' }, remaining_content)
+    end)
+
+    it('does not move sibling items at same indentation level', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child of parent
+- Sibling at root level
+  - Child of sibling]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Only parent and its child should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child of parent]=]
+      )
+
+      -- And - Sibling and its child should remain
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Sibling at root level', '  - Child of sibling' }, remaining_content)
+    end)
+
+    it('moves parent with child containing empty lines', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child task 1
+
+  - Child task 2
+- Sibling task]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Empty lines within children should be moved too
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child task 1
+
+  - Child task 2]=]
+      )
+
+      -- And - Sibling should remain
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Sibling task' }, remaining_content)
+    end)
+
+    it('does not move empty line before header', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child task
+
+## Other header]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Parent and child should be moved, but not the empty line
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child task]=]
+      )
+
+      -- And - Empty line and header should remain in original file
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '', '## Other header' }, remaining_content)
+    end)
+  end)
 end)
