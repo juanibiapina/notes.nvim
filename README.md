@@ -33,8 +33,7 @@ Plug 'juanibiapina/notes.nvim'
 - `:NotesOpen {filename}` - Open a note file (automatically adds .md extension)
 - `:NotesOpenCurrent` - Open link under cursor or follow `[[filename]]` links
 - `:NotesDailyToday` - Open today's daily note (format: `daily/YYYY-MM-DD.md`, day changes at 4 AM)
-- `:NotesTaskNew` - Create a new task `- [ ]` on the next line and enter insert mode
-- `:NotesTaskNewIndented` - Create checkbox with one level of indentation (max), otherwise perform normal 'o' behavior
+- `:NotesTaskNew` - Create a new task `- [ ]` on the next line. When on a checkbox line, creates an indented child (max one level)
 - `:NotesLink` - Wrap word under cursor in `[[ ]]` to create a reference
 - `:NotesMoveToToday` - Move current line to today's daily file (day changes at 4 AM)
 - `:NotesMagic` - Smart context-aware command (follows links or toggles tasks)
@@ -51,23 +50,13 @@ vim.keymap.set('n', '<leader>qd', ':NotesMoveToToday', { desc = 'Notes: move lin
 vim.keymap.set('n', '<leader>ql', ':NotesLink', { desc = 'Notes: wrap word under cursor in [[ ]]' })
 vim.keymap.set('n', '<leader>qoi', ':NotesOpen index', { desc = 'Notes: open index note')})
 vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open today\'s daily note'})
-
--- Optional: remap 'o' to create indented checkboxes in markdown files
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'markdown',
-  callback = function()
-    vim.keymap.set('n', 'o', ':NotesTaskNewIndented<CR>', { buffer = true, desc = 'Notes: create indented checkbox or new line' })
-  end
-})
 ```
 
 ### Usage Examples
 
 **Following links**: Place cursor on any `[[filename]]` link and press your mapped key or use `:NotesOpenCurrent` to open `filename.md`.
 
-**Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax. The command automatically enters insert mode at the end of the line.
-
-**Creating indented checkboxes**: Use `:NotesTaskNewIndented` (or map it to `o`) to create checkboxes with one level of indentation. On a non-indented checkbox, creates an indented child (2 spaces). On an already indented checkbox, creates a sibling at the same level (maintains max one level of indentation). On non-checkbox lines, performs normal `o` behavior. Perfect for simple parent-child task structures.
+**Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax. When run on a checkbox line, creates an indented child (2 spaces). When run on an already indented checkbox (2+ spaces), creates a sibling at the same level (maintains max one level of indentation). When run on a non-checkbox line, creates a normal checkbox. The command automatically enters insert mode at the end of the line. Perfect for simple parent-child task structures.
 
 **Creating links**: Use `:NotesLink` to wrap the word under the cursor in `[[ ]]` brackets, creating an Obsidian-style reference. Works with words containing underscores and hyphens. Does nothing if cursor is on whitespace or already inside a link.
 

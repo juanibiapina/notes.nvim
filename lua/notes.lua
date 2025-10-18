@@ -442,24 +442,12 @@ function M.daily_next()
 end
 
 -- Creates a new empty, not done task on the next line
+-- If current line is a checkbox, creates an indented checkbox (max one level)
 function M.task_new()
-  local current_line = vim.fn.line('.')
-
-  -- Insert a new line after the current line
-  vim.fn.append(current_line, '- [ ] ')
-
-  -- Move cursor to the new line at the end
-  vim.cmd('normal! j$')
-
-  -- Enter insert mode for immediate editing
-  vim.cmd('startinsert!')
-end
-
--- Creates a new indented checkbox on the next line if on a checkbox line
--- Otherwise performs normal 'o' behavior
-function M.task_new_indented()
   local line = vim.fn.getline('.')
+  local current_line_num = vim.fn.line('.')
 
+  local new_line
   if is_task_line(line) then
     -- Get current line's indentation
     local indent = get_indentation_level(line)
@@ -467,22 +455,20 @@ function M.task_new_indented()
     -- Create new line with indentation (max one level: 0 -> 2, 2+ stays same)
     local new_indent_level = math.max(indent, 2)
     local new_indent = string.rep(' ', new_indent_level)
-    local new_line = new_indent .. '- [ ] '
-
-    -- Insert new line below current line
-    local current_line_num = vim.fn.line('.')
-    vim.fn.append(current_line_num, new_line)
-
-    -- Move cursor to the new line at the end
-    vim.cmd('normal! j$')
-
-    -- Enter insert mode
-    vim.cmd('startinsert!')
+    new_line = new_indent .. '- [ ] '
   else
-    -- Not a task line, perform normal 'o' behavior
-    vim.cmd('normal! o')
-    vim.cmd('startinsert')
+    -- Not a task line, create normal checkbox
+    new_line = '- [ ] '
   end
+
+  -- Insert new line below current line
+  vim.fn.append(current_line_num, new_line)
+
+  -- Move cursor to the new line at the end
+  vim.cmd('normal! j$')
+
+  -- Enter insert mode for immediate editing
+  vim.cmd('startinsert!')
 end
 
 -- Toggle a task between done and not done. Does nothing if current line isn't a task.

@@ -28,11 +28,7 @@ end, { desc = "Open next day's daily file" })
 
 vim.api.nvim_create_user_command('NotesTaskNew', function()
   notes.task_new()
-end, { desc = 'Create a new empty task on the next line' })
-
-vim.api.nvim_create_user_command('NotesTaskNewIndented', function()
-  notes.task_new_indented()
-end, { desc = 'Create indented checkbox or open new line' })
+end, { desc = 'Create a new task. On checkbox line, creates indented child (max one level)' })
 
 vim.api.nvim_create_user_command('NotesMagic', function()
   notes.magic()
