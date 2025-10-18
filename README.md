@@ -33,7 +33,8 @@ Plug 'juanibiapina/notes.nvim'
 - `:NotesOpen {filename}` - Open a note file (automatically adds .md extension)
 - `:NotesOpenCurrent` - Open link under cursor or follow `[[filename]]` links
 - `:NotesDailyToday` - Open today's daily note (format: `daily/YYYY-MM-DD.md`, day changes at 4 AM)
-- `:NotesTaskNew` - Create a new task `- [ ]` on the next line. When on a checkbox line, creates an indented child (max one level)
+- `:NotesTaskNew` - Create a new task `- [ ]` on the next line at the same indentation level
+- `:NotesTaskNewIndented` - Create a new indented child task (always adds 2 spaces)
 - `:NotesLink` - Wrap word under cursor in `[[ ]]` to create a reference
 - `:NotesMoveToToday` - Move current line to today's daily file (day changes at 4 AM)
 - `:NotesMagic` - Smart context-aware command (follows links or toggles tasks)
@@ -56,7 +57,7 @@ vim.keymap.set('n', '<leader>qot', ':NotesDailyToday', { desc = 'Notes: open tod
 
 **Following links**: Place cursor on any `[[filename]]` link and press your mapped key or use `:NotesOpenCurrent` to open `filename.md`.
 
-**Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax. When run on a checkbox line, creates an indented child (2 spaces). When run on an already indented checkbox (2+ spaces), creates a sibling at the same level (maintains max one level of indentation). When run on a non-checkbox line, creates a normal checkbox. The command automatically enters insert mode at the end of the line. Perfect for simple parent-child task structures.
+**Creating tasks**: Use `:NotesTaskNew` to create a new task with checkbox syntax at the same indentation level as the current line. Perfect for creating sibling tasks. Use `:NotesTaskNewIndented` to create an indented child task (always adds 2 spaces of indentation: 0 → 2, 2 → 4, 4 → 6, etc.). When run on non-checkbox lines, both commands create a normal checkbox. Both commands automatically enter insert mode at the end of the line.
 
 **Creating links**: Use `:NotesLink` to wrap the word under the cursor in `[[ ]]` brackets, creating an Obsidian-style reference. Works with words containing underscores and hyphens. Does nothing if cursor is on whitespace or already inside a link.
 

@@ -29,7 +29,7 @@ describe('Task commands', function()
       assert.are.equal(6, cursor_pos[2]) -- after "- [ ] " (0-indexed)
     end)
 
-    it('creates indented checkbox from unchecked parent', function()
+    it('creates sibling checkbox at same level from unchecked parent', function()
       -- Given
       helpers.set_buffer_content('- [ ] parent task')
       vim.cmd('normal! gg')
@@ -40,15 +40,15 @@ describe('Task commands', function()
       -- Then
       local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
       assert.are.equal('- [ ] parent task', lines[1])
-      assert.are.equal('  - [ ] ', lines[2])
+      assert.are.equal('- [ ] ', lines[2])
 
       -- Cursor should be at the end of the new task line
       local cursor_pos = vim.api.nvim_win_get_cursor(0)
       assert.are.equal(2, cursor_pos[1]) -- line 2
-      assert.are.equal(8, cursor_pos[2]) -- after "  - [ ] " (0-indexed)
+      assert.are.equal(6, cursor_pos[2]) -- after "- [ ] " (0-indexed)
     end)
 
-    it('creates indented checkbox from checked parent (always unchecked child)', function()
+    it('creates sibling checkbox at same level from checked parent', function()
       -- Given
       helpers.set_buffer_content('- [x] completed parent')
       vim.cmd('normal! gg')
@@ -59,12 +59,12 @@ describe('Task commands', function()
       -- Then
       local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
       assert.are.equal('- [x] completed parent', lines[1])
-      assert.are.equal('  - [ ] ', lines[2]) -- Child is always unchecked
+      assert.are.equal('- [ ] ', lines[2])
 
       -- Cursor should be at the end of the new task line
       local cursor_pos = vim.api.nvim_win_get_cursor(0)
       assert.are.equal(2, cursor_pos[1])
-      assert.are.equal(8, cursor_pos[2])
+      assert.are.equal(6, cursor_pos[2])
     end)
 
     it('keeps same indentation level when parent is already indented (max one level)', function()
@@ -142,7 +142,7 @@ describe('Task commands', function()
       -- Then
       local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
       assert.are.equal('- [ ] task with text', lines[1])
-      assert.are.equal('  - [ ] ', lines[2])
+      assert.are.equal('- [ ] ', lines[2])
     end)
 
     it('enters insert mode after creating task', function()
@@ -164,6 +164,115 @@ describe('Task commands', function()
       local cursor_pos = vim.api.nvim_win_get_cursor(0)
       assert.are.equal(2, cursor_pos[1]) -- line 2
       assert.are.equal(6, cursor_pos[2]) -- after "- [ ] " (0-indexed)
+    end)
+  end)
+
+  describe('NotesTaskNewIndented', function()
+    it('creates a new empty task on the next line when not on a checkbox', function()
+      -- Given
+      helpers.set_buffer_content('Some existing content')
+      vim.cmd('normal! gg')
+
+      -- When
+      vim.cmd('NotesTaskNewIndented')
+
+      -- Then
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.equal('Some existing content', lines[1])
+      assert.are.equal('- [ ] ', lines[2])
+
+      -- Cursor should be at the end of the new task line
+      local cursor_pos = vim.api.nvim_win_get_cursor(0)
+      assert.are.equal(2, cursor_pos[1]) -- line 2
+      assert.are.equal(6, cursor_pos[2]) -- after "- [ ] " (0-indexed)
+    end)
+
+    it('creates indented child checkbox from unchecked parent', function()
+      -- Given
+      helpers.set_buffer_content('- [ ] parent task')
+      vim.cmd('normal! gg')
+
+      -- When
+      vim.cmd('NotesTaskNewIndented')
+
+      -- Then
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.equal('- [ ] parent task', lines[1])
+      assert.are.equal('  - [ ] ', lines[2])
+
+      -- Cursor should be at the end of the new task line
+      local cursor_pos = vim.api.nvim_win_get_cursor(0)
+      assert.are.equal(2, cursor_pos[1]) -- line 2
+      assert.are.equal(8, cursor_pos[2]) -- after "  - [ ] " (0-indexed)
+    end)
+
+    it('creates indented child checkbox from checked parent (always unchecked child)', function()
+      -- Given
+      helpers.set_buffer_content('- [x] completed parent')
+      vim.cmd('normal! gg')
+
+      -- When
+      vim.cmd('NotesTaskNewIndented')
+
+      -- Then
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.equal('- [x] completed parent', lines[1])
+      assert.are.equal('  - [ ] ', lines[2]) -- Child is always unchecked
+
+      -- Cursor should be at the end of the new task line
+      local cursor_pos = vim.api.nvim_win_get_cursor(0)
+      assert.are.equal(2, cursor_pos[1])
+      assert.are.equal(8, cursor_pos[2])
+    end)
+
+    it('indents further when parent is already indented (always adds 2 spaces)', function()
+      -- Given
+      helpers.set_buffer_content('  - [ ] indented parent')
+      vim.cmd('normal! gg')
+
+      -- When
+      vim.cmd('NotesTaskNewIndented')
+
+      -- Then
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.equal('  - [ ] indented parent', lines[1])
+      assert.are.equal('    - [ ] ', lines[2]) -- 4 spaces (2 + 2)
+
+      local cursor_pos = vim.api.nvim_win_get_cursor(0)
+      assert.are.equal(2, cursor_pos[1])
+      assert.are.equal(10, cursor_pos[2]) -- after "    - [ ] " (0-indexed)
+    end)
+
+    it('indents further for deeply indented parent (always adds 2 spaces)', function()
+      -- Given
+      helpers.set_buffer_content('    - [ ] double indented')
+      vim.cmd('normal! gg')
+
+      -- When
+      vim.cmd('NotesTaskNewIndented')
+
+      -- Then
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.equal('    - [ ] double indented', lines[1])
+      assert.are.equal('      - [ ] ', lines[2]) -- 6 spaces (4 + 2)
+
+      local cursor_pos = vim.api.nvim_win_get_cursor(0)
+      assert.are.equal(2, cursor_pos[1])
+      assert.are.equal(12, cursor_pos[2]) -- after "      - [ ] " (0-indexed)
+    end)
+
+    it('lua function works to create new indented task', function()
+      -- Given
+      helpers.set_buffer_content('- [ ] parent')
+      vim.cmd('normal! gg')
+
+      -- When
+      require('notes').task_new_indented()
+
+      -- Then
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.equal('- [ ] parent', lines[1])
+      assert.are.equal('  - [ ] ', lines[2])
     end)
   end)
 end)
