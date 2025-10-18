@@ -80,6 +80,28 @@ COMMANDS						*notes-commands*
 	- Positions cursor at the end for immediate editing
 	- Works from any line in the buffer
 
+:NotesTaskNewIndented					*:NotesTaskNewIndented*
+	Creates checkbox with one level of indentation (max):
+	- On non-indented checkbox (0 spaces): creates indented child (2 spaces)
+	- On already indented checkbox (2+ spaces): creates sibling at same level
+	- Maximum indentation is one level (prevents deeply nested structures)
+	- New checkbox is always unchecked regardless of parent state
+	- If not on a checkbox line, performs normal `o` behavior (opens new line)
+	- Positions cursor at the end for immediate editing
+	- Perfect for simple parent-child task structures
+
+	Examples: >
+		" On line: - [ ] parent task
+		" After :NotesTaskNewIndented:
+		" - [ ] parent task
+		"   - [ ] |cursor here| (indented child)
+
+		" On line:   - [x] indented task
+		" After :NotesTaskNewIndented:
+		"   - [x] indented task
+		"   - [ ] |cursor here| (sibling at same level)
+<
+
 :NotesLink						*:NotesLink*
 	Wrap the word under cursor in `[[ ]]` to create a reference:
 	- Wraps the word under cursor in Obsidian-style link brackets
@@ -159,6 +181,9 @@ require('notes').daily_next()				*notes.daily_next()*
 require('notes').task_new()				*notes.task_new()*
 	Lua equivalent of `:NotesTaskNew` command.
 
+require('notes').task_new_indented()			*notes.task_new_indented()*
+	Lua equivalent of `:NotesTaskNewIndented` command.
+
 require('notes').notes_link()				*notes.notes_link()*
 	Lua equivalent of `:NotesLink` command.
 
@@ -205,6 +230,9 @@ The plugin does not set any default mappings. You can create your own: >
 	nnoremap <leader>nt <cmd>lua require('notes').task_new()<CR>
 	nnoremap <leader>ql <cmd>lua require('notes').notes_link()<CR>
 	nnoremap <CR> <cmd>lua require('notes').magic()<CR>
+
+	" Optional: remap 'o' for indented checkboxes in markdown files
+	autocmd FileType markdown nnoremap <buffer> o :NotesTaskNewIndented<CR>
 <
 
 USAGE EXAMPLES						*notes-examples*
@@ -221,6 +249,19 @@ Creating tasks:
 	Use `:NotesTaskNew` to create a new task `- [ ] ` on the next line,
 	with cursor positioned for immediate editing. The command automatically
 	enters insert mode so you can start typing the task description.
+
+Creating indented checkboxes:
+	Use `:NotesTaskNewIndented` (or map it to `o`) to create checkboxes with
+	one level of indentation (max). On non-indented checkboxes, creates an
+	indented child. On already indented checkboxes, creates a sibling at the
+	same level. When not on a checkbox line, performs normal `o` behavior.
+	Perfect for simple parent-child task structures.
+
+	Example workflow: >
+		- [ ] Main task
+		  - [ ] Subtask 1    " Created with :NotesTaskNewIndented on main task
+		  - [ ] Subtask 2    " Created with :NotesTaskNewIndented on subtask 1
+<
 
 Creating links:
 	Use `:NotesLink` to wrap the word under cursor in `[[ ]]` brackets,

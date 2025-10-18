@@ -30,6 +30,10 @@ vim.api.nvim_create_user_command('NotesTaskNew', function()
   notes.task_new()
 end, { desc = 'Create a new empty task on the next line' })
 
+vim.api.nvim_create_user_command('NotesTaskNewIndented', function()
+  notes.task_new_indented()
+end, { desc = 'Create indented checkbox or open new line' })
+
 vim.api.nvim_create_user_command('NotesMagic', function()
   notes.magic()
 end, { desc = 'Smart command: follow link, toggle task, or open list item' })
