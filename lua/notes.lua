@@ -362,6 +362,22 @@ function M.move_to_today()
   end
   -- Delete the parent line last
   vim.fn.deletebufline('%', current_line_num)
+
+  -- Delete all consecutive empty lines after the moved content
+  while current_line_num <= vim.fn.line('$') do
+    local line = vim.fn.getline(current_line_num)
+    if line:match('^%s*$') then
+      local before_count = vim.fn.line('$')
+      vim.fn.deletebufline('%', current_line_num)
+      local after_count = vim.fn.line('$')
+      -- If line count didn't change, we can't delete this line (last line in buffer)
+      if before_count == after_count then
+        break
+      end
+    else
+      break
+    end
+  end
 end
 
 -- Opens today's daily file under the format daily/YYYY-MM-DD.md

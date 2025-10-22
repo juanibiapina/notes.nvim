@@ -365,7 +365,7 @@ Some journal entry
       assert.are.same({ '- Sibling task' }, remaining_content)
     end)
 
-    it('does not move empty line before header', function()
+    it('deletes empty line before header after moving parent with children', function()
       -- Given
       helpers.set_buffer_content([=[
 - Parent task
@@ -378,7 +378,7 @@ Some journal entry
       -- When
       require('notes').move_to_today()
 
-      -- Then - Parent and child should be moved, but not the empty line
+      -- Then - Parent and child should be moved
       helpers.assert_file_content(
         tempfile_path,
         [=[
@@ -390,9 +390,185 @@ Some journal entry
   - Child task]=]
       )
 
-      -- And - Empty line and header should remain in original file
+      -- And - Empty line after moved content should be deleted, header remains
       local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-      assert.are.same({ '', '## Other header' }, remaining_content)
+      assert.are.same({ '## Other header' }, remaining_content)
+    end)
+  end)
+
+  describe('deleting empty lines after moved content', function()
+    it('deletes single empty line after moved task', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Task to move
+
+- Task that stays]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Task should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Task to move]=]
+      )
+
+      -- And - Empty line should be deleted, only the staying task remains
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Task that stays' }, remaining_content)
+    end)
+
+    it('deletes multiple consecutive empty lines after moved task', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Task to move
+
+
+
+- Task that stays]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Task should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Task to move]=]
+      )
+
+      -- And - All empty lines should be deleted
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Task that stays' }, remaining_content)
+    end)
+
+    it('deletes empty lines after parent with children', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Parent task
+  - Child task
+
+
+- Sibling task]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Parent and child should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Parent task
+  - Child task]=]
+      )
+
+      -- And - Empty lines should be deleted
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Sibling task' }, remaining_content)
+    end)
+
+    it('does not delete anything when no empty lines after moved task', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Task to move
+- Task that stays]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Task should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Task to move]=]
+      )
+
+      -- And - Staying task should remain unchanged
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '- Task that stays' }, remaining_content)
+    end)
+
+    it('deletes all trailing empty lines when task is last with empty lines below', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Task to move
+
+
+]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Task should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Task to move]=]
+      )
+
+      -- And - All empty lines should be deleted, leaving empty buffer
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ '' }, remaining_content)
+    end)
+
+    it('deletes empty lines but preserves content after them', function()
+      -- Given
+      helpers.set_buffer_content([=[
+- Task to move
+
+Some regular text
+More text here]=])
+      vim.cmd('normal! gg')
+      vim.cmd('file project.md')
+
+      -- When
+      require('notes').move_to_today()
+
+      -- Then - Task should be moved
+      helpers.assert_file_content(
+        tempfile_path,
+        [=[
+## Tasks
+
+### [[project]]
+
+- Task to move]=]
+      )
+
+      -- And - Empty line should be deleted, text should remain
+      local remaining_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      assert.are.same({ 'Some regular text', 'More text here' }, remaining_content)
     end)
   end)
 end)
